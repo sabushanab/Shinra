@@ -1,0 +1,130 @@
+<script id="nav-template" type="text/x-handlebars-template">
+    {{name}} - {{activeMemberCount}} Members
+    <span class="d-none d-lg-inline"> - {{slogan}}</span>
+    <span class="header-nav-link" id="party-assist-link">Party Assist</span>
+    <span class="header-nav-link" id="character-info-link">Character Info</span>
+</script>
+
+<script id="member-template" type="text/x-handlebars-template">
+    <ul class="list-group list-group-flush">
+        {{#each this.Members}}
+        <li class="list-group-item member-item active" data-id={{id}} data-name="{{name}}">
+            <img src="{{avatar}}" width="25" height="25" />
+            &nbsp;&nbsp;&nbsp;{{name}}
+        </li>
+        {{/each}}
+    </ul>
+</script>
+
+<script id="party-selection-template" type="text/x-handlebars-template">
+    <div class="row">
+        {{#each Members}}
+        <div class="col-xl-3 empty-card">
+            <div class="card">
+                <div class="card-body">
+                    Select a member <i class="fas fa-user-plus"></i>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</script>
+
+<script id="no-character-data-template" type="text/x-handlebars-template">
+    <div class="no-data-alert-container">
+        <div class="alert alert-warning" role="alert">
+            No {{DataType}} data available at this time. Please check back later!
+        </div>
+    </div>
+</script>
+
+<script id="character-data-container-template" type="text/x-handlebars-template">
+    <div class="card" style="color: #000">
+        <div class="card-header bg-primary">
+            {{DataType}}
+        </div>
+        <div class="card-body">
+            <div class="row dynamic-data-section">
+                <div class="loading-container">
+                    <div class="lds-ring">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script id="character-info-template" type="text/x-handlebars-template">
+    <div class="alert alert-info" role="alert" style="overflow:auto;">
+        <span>
+            <span class="bold">{{Name}}</span> is a <span class="bold">{{Gender}} {{Race}}</span> in the <span class="bold">{{GrandCompany}}</span> grand company.
+        </span>
+        {{#if ShowButton}}
+        <span style="float:right">
+            <button type="button" id="my-character-btn" class="btn btn-primary btn-sm" data-id={{ID}}>This is me!</button>
+        </span>
+        {{/if}}
+    </div>
+</script>
+
+<script id="character-jobs-template" type="text/x-handlebars-template">
+    {{#each this.ClassTypes}}
+    <div class="col-sm-3">
+        {{Name}}
+        <table>
+            {{#each Classes}}
+            <tr>
+                <td style="width: 2%;"><img src="{{Icon}}" width="25" height="25" title="{{Name}}" /></td>
+                <td style="width: 96%;">
+                    <div style="margin-top: 5px;" class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{Width}}%" aria-valuenow="{{ExpLevel}}" aria-valuemin="0" aria-valuemax="{{ExpLevelMax}}"></div>
+                    </div>
+                </td style="width: 2%;">
+                <td>{{Level}}</td>
+            </tr>
+            {{/each}}
+        </table>
+    </div>
+    {{/each}}
+</script>
+
+<script id="character-collectible-template" type="text/x-handlebars-template">
+    <div class="col-xl-6 mount-section">
+        Mount <span style="float: right">{{OwnedMountCount}}/{{MountCount}}</span>
+        <input type="text" id="mount-search" class="form-control" placeholder="Enter mount" />
+        <div class="row" style="max-height: 600px; overflow-y: scroll; overflow-x: hidden">
+            {{#each this.Mounts}}
+            <div class="collectible-item col-xl-3 border pt-1 {{#if Owned}}bg-success{{/if}} text-center" data-name="{{Name}}">
+                <a href="https://duckduckgo.com/?q=!ducky+{{Name}}+ffxiv+mount" style="text-decoration: none" target="_blank">
+                    <img src="https://xivapi.com{{Icon}}" width="30" height="30" title="{{Name}}" onerror="this.style.display='none'" /><br/>
+                    {{Name}}
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    <div class="col-xl-6 minion-section">
+        Minion <span style="float: right">{{OwnedMinionCount}}/{{MinionCount}}</span>
+        <input type="text" id="minion-search" class="form-control" placeholder="Enter minion" />
+        <div class="row" style="max-height: 600px; overflow-y: scroll; overflow-x: hidden">
+            {{#each this.Minions}}
+            <div class="collectible-item col-xl-3 border pt-1 {{#if Owned}}bg-success{{/if}} text-center" data-name="{{Name}}">
+                <a href="https://duckduckgo.com/?q=!ducky+{{Name}}+ffxiv" style="text-decoration: none" target="_blank">
+                    <img src="https://xivapi.com{{Icon}}" width="30" height="30" title="{{Name}}" onerror="this.style.display='none'" /><br/>
+                    {{Name}}
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+<script id="alert-template" type="text/x-handlebars-template">
+    <div class="alert alert-primary intro-alert" role="alert">
+        {{Text}}
+    </div>
+</script>
