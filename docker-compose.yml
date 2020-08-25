@@ -9,7 +9,7 @@ services:
     expose:
       - "5000"
     restart: always
-  
+
   reverseproxy:
     build:
       context: ./Nginx

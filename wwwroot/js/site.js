@@ -6,7 +6,6 @@
 	characterDataContainerTemplate,
 	noCharacterDataTemplate,
 	urlParameters,
-	partySelectionTemplate,
 	alertTemplate
 
 $(document).ready(function() {
@@ -17,7 +16,6 @@ $(document).ready(function() {
 	var characterInfoTemplateSource = document.getElementById("character-info-template").innerHTML;
 	var characterDataContainerTemplateSource = document.getElementById("character-data-container-template").innerHTML;
 	var noCharacterDataTemplateSource = document.getElementById("no-character-data-template").innerHTML;
-	var partySelectionTemplateSource = document.getElementById("party-selection-template").innerHTML;
 	var alertTemplateSource = document.getElementById("alert-template").innerHTML;
 	
 	navTemplate = Handlebars.compile(navTemplateSource);
@@ -27,7 +25,6 @@ $(document).ready(function() {
 	characterInfoTemplate = Handlebars.compile(characterInfoTemplateSource);
 	characterDataContainerTemplate = Handlebars.compile(characterDataContainerTemplateSource);
 	noCharacterDataTemplate = Handlebars.compile(noCharacterDataTemplateSource);
-	partySelectionTemplate = Handlebars.compile(partySelectionTemplateSource);
 	alertTemplate = Handlebars.compile(alertTemplateSource);
 	urlParameters = getUrlVars();
 
@@ -54,16 +51,6 @@ $(document).ready(function() {
 		})
 	}
 })
-
-$(document).on('click', '#party-assist-link', function (i, e) {
-	window.history.pushState(null, "Finale Fantasia", "?p=party");
-	getEntryPoint();
-});
-
-$(document).on('click', '#character-info-link', function (i, e) {
-	window.history.pushState(null, "Finale Fantasia", "?c=character");
-	getEntryPoint();
-});
 
 $(document).on('click', '#my-character-btn', function(i, e) {
 	Cookies.set('main_character', $(i.target).data("id"));
@@ -96,13 +83,9 @@ $(document).on('keyup', '#minion-search', function() {
 
 $(document).on('click', '.member-item', function (i, e) {
 	urlParameters = getUrlVars();
-	if (urlParameters["p"] && urlParameters["p"] == "party") {
-		addPartyMember($(i.target).data());
-	} else {
-		window.history.pushState(null, "Finale Fantasia", "?p=character&id=" + $(i.target).data("id"));
-		$('.content-section').hide();
-		displayCharacterPage($(i.target).data("id"));
-	}
+	window.history.pushState(null, "Finale Fantasia", "?p=character&id=" + $(i.target).data("id"));
+	$('.content-section').hide();
+	displayCharacterPage($(i.target).data("id"));
 });
 
 window.onpopstate = function(event) {
@@ -113,9 +96,7 @@ window.onpopstate = function(event) {
 function getEntryPoint() {
 	urlParameters = getUrlVars();
 	$('.content-section').hide();
-	if (urlParameters["p"] && urlParameters["p"] == "party") {
-		displayPartyPage();
-	} else if (urlParameters["id"]) {
+	if (urlParameters["id"]) {
 		displayCharacterPage(urlParameters["id"]);
 	} else if (Cookies.get("main_character")) {
 		displayCharacterPage(Cookies.get("main_character"));
@@ -134,18 +115,6 @@ function loadPage() {
 		};
 		$('#member-section').html(memberTemplate(memberTemplateData));
 	});
-}
-
-function displayPartyPage() {
-	var partySelectionTemplateData = {
-		Members: ["", "", "", ""]
-	}
-	$('#party-selection-section').html(partySelectionTemplate(partySelectionTemplateData)).show();
-}
-
-function addPartyMember(data) {
-	var $availableCard = $('.empty-card:first');
-	$availableCard.removeClass('empty-card').find('.card-body').html(data.name).css('background-color', '#2196F3').css('color', 'white');
 }
 
 function displayCharacterPage(id) {
