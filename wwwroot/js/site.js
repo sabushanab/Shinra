@@ -108,7 +108,6 @@ function getEntryPoint() {
 function loadPage() {
 	getEntryPoint();
 	$.get("/XIVAPI/GetFreeCompanyMembers", function( data ) {
-		console.log(data);
 		$('#nav-section').html(navTemplate(data.freeCompany));
 		var memberTemplateData = {
 			"Members": data.freeCompanyMembers
@@ -121,7 +120,6 @@ function displayCharacterPage(id) {
 	$('#jobs-section').html(characterDataContainerTemplate({ DataType: "Jobs"})).show();
 	$('#collectible-section').html(characterDataContainerTemplate({ DataType: "Collectibles"})).show();
 	$.get("/XIVAPI/GetCharacter?id=" + id, function(data) {
-		console.log(data);
 		if (data.character == null) {
 			$("#jobs-section .dynamic-data-section").html(noCharacterDataTemplate({ DataType: "job" }));
 			$('#collectible-section .dynamic-data-section').html(noCharacterDataTemplate({ DataType: "collectible" }));
@@ -169,7 +167,6 @@ function displayJobs(character) {
 }
 
 function displayMounts(data) {
-	console.log(data);
 	characterCollectibleTemplateData = {
 		OwnedMountCount: data.mounts.length,
 		MountCount: Object.keys(ffxivData["Mount"]).length,
