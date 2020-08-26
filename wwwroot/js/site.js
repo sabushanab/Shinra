@@ -150,9 +150,9 @@ function displayJobs(character) {
 	for (var classJob in character.classJobs) {
 		var key = character.classJobs[classJob];
 		var currentClass = classes[key.jobID];
-		if (key.Level == 70) {
+		if (key.level == 80) {
 			jobs[currentClass.Type].push({ "Icon": currentClass.Icon, "ExpLevel": "", "ExpLevelMax": 100, "Level": key.level, "Name": currentClass.Name, "Width": 100 });
-		} else if (key.Level != 0) {
+		} else if (key.level != 0) {
 			jobs[currentClass.Type].push({ "Icon": currentClass.Icon, "ExpLevel": key.expLevel, "ExpLevelMax": key.expLevelMax, "Level": key.level, "Name": currentClass.Name, "Width": key.expLevel / key.expLevelMax * 100 });
 		}
 	};
