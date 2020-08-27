@@ -1,8 +1,10 @@
-using System;
+using Akka.Actor;
+using Newtonsoft.Json;
+using Shinra.Actors;
+using Shinra.Messages.Character;
+using Shinra.Services;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Shinra.Services;
-using Newtonsoft.Json;
 
 namespace Shinra.Clients
 {
@@ -34,7 +36,7 @@ namespace Shinra.Clients
             FreeCompanyMembersContainer freeCompanyMembers = await GetFreeCompanyMembers();
             foreach(var member in freeCompanyMembers.FreeCompanyMembers) 
             {
-                await GetCharacter(member.ID);
+                ActorService.CharacterSupervisor.Tell(new UpdateCharacterMessage(member.ID));
             }
         }
 

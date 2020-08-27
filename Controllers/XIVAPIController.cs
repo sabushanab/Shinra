@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Shinra.Clients;
-using Shinra.Models;
 using Shinra.Services;
+using System.Threading.Tasks;
 
 namespace Shinra.Controllers
 {

@@ -1,15 +1,13 @@
-using System;
-using System.Threading.Tasks;
 using Hangfire;
-using Microsoft.Extensions.DependencyInjection;
 using Shinra.Clients;
+using System;
 
 namespace Shinra
 {
     public class Scheduler
     {
         public Scheduler() {}
-        public static void Configure(IServiceProvider provider) 
+        public static void Configure() 
         {
             RecurringJob.RemoveIfExists(nameof(XIVAPIClient.GetFreeCompanyMembers));
             RecurringJob.AddOrUpdate(nameof(XIVAPIClient.GetFreeCompanyMembers), (IXIVAPIClient client) => client.GetFreeCompanyMembers(),
