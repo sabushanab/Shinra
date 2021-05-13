@@ -1,2 +1,2 @@
 # Shinra
- Free Company On Faerie
+ ## Free Company by having them ride away on the Ferry
