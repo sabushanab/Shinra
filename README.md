@@ -1,2 +1,2 @@
 # Shinra
- Free Company On Faerie
+ ###Free Company On Faire
