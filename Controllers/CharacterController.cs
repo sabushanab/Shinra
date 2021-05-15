@@ -3,9 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shinra.Actors;
 using Shinra.Clients;
 using Shinra.Messages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shinra.Controllers

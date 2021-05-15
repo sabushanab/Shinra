@@ -23,7 +23,7 @@ namespace Shinra.Actors.Character
         private void Ready()
         {
             Receive<UpdateCharacterMessage>(message => ProcessNotifyCandidateMessage(message));
-            ReceiveAny(message => _logger.Warning("Unhandeled Message while ready {@message}", message));
+            ReceiveAny(message => _logger.Warning("Unhandled Message while ready {@message}", message));
         }
         private void BecomeReady()
         {
@@ -33,14 +33,14 @@ namespace Shinra.Actors.Character
         protected override void PreRestart(Exception reason, object message)
         {
             UpdateCharacterMessage characterMessage = message as UpdateCharacterMessage;
-            _logger.Error(reason, "Error processing candidate @CharacterID", characterMessage.CharacterID);
+            _logger.Error(reason, "Error processing character @CharacterID", characterMessage.CharacterID);
             base.PreRestart(reason, message);
         }
         private void Busy()
         {
             Receive<CharacterUpdated>(message => BecomeReady());
             Receive<FailureMessage>(message => BecomeReady());
-            ReceiveAny(message => _logger.Warning("Unhandeled Message while busy {@message}", message));
+            ReceiveAny(message => _logger.Warning("Unhandled Message while busy {@message}", message));
         }
 
         void ProcessNotifyCandidateMessage(UpdateCharacterMessage message)

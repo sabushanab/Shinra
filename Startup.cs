@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Nest;
 using Shinra.Actors;
 using Shinra.Clients;
 
@@ -23,7 +24,10 @@ namespace Shinra
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews()
-                .AddRazorRuntimeCompilation();
+                .AddRazorRuntimeCompilation()
+                .AddNewtonsoftJson(options =>
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                );
             services.AddHttpClient<IXIVAPIClient, XIVAPIClient>();
             services.AddHangfire(c => c.UseMemoryStorage());
             services.AddHangfireServer();

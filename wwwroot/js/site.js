@@ -33,10 +33,10 @@ $(document).ready(function() {
 		loadPage();
 	} else {
 		var loadMounts = new Promise((resolve, reject) => {
-			loadEnumeration("Mount", 1, resolve, reject);
+			loadCollection("mounts", resolve, reject);
 		});
 		var loadMinions = new Promise((resolve, reject) => {
-			loadEnumeration("Companion", 1, resolve, reject);
+			loadCollection("minions", resolve, reject);
 		});
 		var loadRaces = new Promise((resolve, reject) => {
 			loadEnumeration("Race", 1, resolve, reject);
@@ -169,39 +169,51 @@ function displayJobs(character) {
 function displayMounts(data) {
 	characterCollectibleTemplateData = {
 		OwnedMountCount: data.mounts.length,
-		MountCount: Object.keys(ffxivData["Mount"]).length,
+		MountCount: Object.keys(ffxivData["mounts"]).length,
 		Mounts: [],
 		OwnedMinionCount: data.minions.length,
-		MinionCount: Object.keys(ffxivData["Companion"]).length,
+		MinionCount: Object.keys(ffxivData["minions"]).length,
 		Minions: []
 	}
 	var ownedMounts = {};
-	$.each(data.mounts, function(i, key) {
-		var mount = ffxivData["Mount"][key.name.toLowerCase()];
-		ownedMounts[mount.ID] = {};
+	$.each(data.mounts.sort(compare), function(i, key) {
+		var mount = ffxivData["mounts"][key.name.toLowerCase()];
+		ownedMounts[mount.id] = {};
 		mount.Owned = true;
-		characterCollectibleTemplateData.Mounts.push(ffxivData["Mount"][key.name.toLowerCase()])
+		characterCollectibleTemplateData.Mounts.push(ffxivData["mounts"][key.name.toLowerCase()])
 	});
-	$.each(ffxivData["Mount"], function (i, key) {
-		if (!(key.ID in ownedMounts)) {
+	$.each(ffxivData["mounts"], function (i, key) {
+		if (!(key.id in ownedMounts)) {
 			key.Owned = false
 			characterCollectibleTemplateData.Mounts.push(key)
 		}
 	});
 	var ownedMinions = {};
-	$.each(data.minions, function(i, key) {
-		var minion = ffxivData["Companion"][key.name.toLowerCase()];
-		ownedMinions[minion.ID] = {};
+	$.each(data.minions.sort(compare), function(i, key) {
+		var minion = ffxivData["minions"][key.name.toLowerCase()];
+		ownedMinions[minion.id] = {};
 		minion.Owned = true;
-		characterCollectibleTemplateData.Minions.push(ffxivData["Companion"][key.name.toLowerCase()])
+		characterCollectibleTemplateData.Minions.push(ffxivData["minions"][key.name.toLowerCase()])
 	});
-	$.each(ffxivData["Companion"], function (i, key) {
-		if (!(key.ID in ownedMinions)) {
+	$.each(ffxivData["minions"], function (i, key) {
+		if (!(key.id in ownedMinions)) {
 			key.Owned = false;
 			characterCollectibleTemplateData.Minions.push(key)
 		}
 	});
 	$('#collectible-section .dynamic-data-section').html(characterCollectibleTemplate(characterCollectibleTemplateData));
+}
+
+function loadCollection(enumerationType, resolve) {
+	if (!(enumerationType in ffxivData)) {
+		ffxivData[enumerationType] = {};
+    }
+	$.get("https://ffxivcollect.com/api/" + enumerationType, function (data) {
+		$.each(data.results.sort(compare), function (i, key) {
+			ffxivData[enumerationType][key.name.toLowerCase()] = key;
+		});
+		resolve();
+	});
 }
 
 function loadEnumeration(enumerationType, page, resolve, reject) {
@@ -297,3 +309,13 @@ tribes[9] = "Sea Wolf";
 tribes[10] = "Hellsguard";
 tribes[11] = "Raen";
 tribes[12] = "Xaela";
+
+function compare(a, b) {
+	if (a.name < b.name) {
+		return -1;
+	}
+	if (a.name > b.name) {
+		return 1;
+	}
+	return 0;
+}
