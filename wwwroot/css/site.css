@@ -68,7 +68,7 @@ a[data-toggle="collapse"] {
     width: 100%;
 }
 
-#jobs-section, #collectible-section, #info-section {
+#jobs-section, #collectible-section, #info-section, #mount-section, #minion-section {
     margin-left: .3rem;
     margin-top: .3rem;
     width: 100%;
@@ -191,4 +191,29 @@ a[data-toggle="collapse"] {
     margin-bottom: 0px;
     padding-left:15px;
 }
-  
+.party-container {
+    width: 100%;
+    margin-top:10px;
+}
+.party-member {
+    background-color: #2196F3;
+    color: white;
+    border: 1px solid;
+    border-color: #2196F3;
+    border-radius: 10px;
+    min-height: 50px;
+    text-align: center;
+    padding-top: 14px;
+    margin-bottom: 5px;
+}
+.member-selected {
+    cursor: pointer;
+}
+.shinra-nav-menu {
+    float: right;
+    
+}
+.shinra-nav-menu a {
+    color: white;
+    text-decoration: underline;
+}

@@ -1,8 +1,8 @@
 ﻿@{
-    ViewData["Title"] = "Members";
+    ViewData["Title"] = "Party";
 }
 @section Scripts {
-    <script src="~/js/home.js" asp-append-version="true"></script>
+    <script src="~/js/party.js" asp-append-version="true"></script>
 }
 <div class="navbar fixed-top bg-primary" style="color:white;padding:.5rem">
     <div id="nav-section"></div>
@@ -20,37 +20,32 @@
             </div>
         </div>
     </nav>
-    <div style="width:100%">
+    <div class="party-container">
         <div class="row">
-            <div class="col-sm-6 offset-sm-3">
-                <div class="content-section" id="intro-section"></div>
+            <div class="col-lg-2 offset-1 party-member">
+                Select Member
+            </div>
+            <div class="col-lg-2 offset-1 party-member">
+                Select Member
+            </div>
+            <div class="col-lg-2 offset-1 party-member">
+                Select Member
+            </div>
+            <div class="col-lg-2 offset-1 party-member">
+                Select Member
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <div class="content-section" id="info-section"></div>
+                <div class="content-section" id="mount-section"></div>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <div class="content-section" id="jobs-section"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="content-section" id="collectible-section"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="content-section" id="party-selection-section"></div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="content-section" id="party-info-section"></div>
+                <div class="content-section" id="minion-section"></div>
             </div>
         </div>
     </div>
 </div>
 <partial name="_Templates" />
+<partial name="_PartyTemplates" />

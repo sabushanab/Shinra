@@ -1,0 +1,33 @@
+﻿<script id="party-mount-template" type="text/x-handlebars-template">
+    <div class="col-xl-12 mount-section">
+        Mount <span style="float: right">{{OwnedMountCount}}/{{MountCount}}</span>
+        <input type="text" id="mount-search" class="form-control" placeholder="Enter mount" />
+        <div class="row" style="max-height: 600px; overflow-y: scroll; overflow-x: hidden">
+            {{#each this.Mounts}}
+            <div class="collectible-item col-xl-3 border pt-1 {{#if Owned}}bg-success{{/if}} text-center" data-name="{{name}}" data-tooltip="{{hover}}">
+                <a href="https://duckduckgo.com/?q=!ducky+{{name}}+ffxiv+mount" style="text-decoration: none" target="_blank">
+                    <img src="{{icon}}" width="30" height="30" title="{{name}}" onerror="this.style.display='none'" /><br />
+                    {{name}} ({{owned}})
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</script>
+
+<script id="party-minion-template" type="text/x-handlebars-template">
+    <div class="col-xl-12 minion-section">
+        Minion <span style="float: right">{{OwnedMinionCount}}/{{MinionCount}}</span>
+        <input type="text" id="minion-search" class="form-control" placeholder="Enter minion" />
+        <div class="row" style="max-height: 600px; overflow-y: scroll; overflow-x: hidden">
+            {{#each this.Minions}}
+            <div class="collectible-item col-xl-3 border pt-1 {{#if Owned}}bg-success{{/if}} text-center" data-name="{{name}}" data-tooltip="{{hover}}">
+                <a href="https://duckduckgo.com/?q=!ducky+{{name}}+ffxiv" style="text-decoration: none" target="_blank">
+                    <img src="{{icon}}" width="30" height="30" title="{{name}}" onerror="this.style.display='none'" /><br />
+                    {{name}} ({{owned}})
+                </a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</script>
