@@ -69,9 +69,6 @@ $(document).ready(function () {
                 return $(reference).data("tooltip");
             }
         },
-        onShown(instance) {
-            console.log(instance.popper.innerHTML);
-        },
         allowHTML: true
     });
 })
