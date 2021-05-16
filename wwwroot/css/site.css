@@ -178,4 +178,17 @@ a[data-toggle="collapse"] {
         transform: rotate(360deg);
     }
 }
+.tippy-box[data-theme~='light'] {
+    background-color: #2196F3;
+    color: white;
+    padding-bottom:0px;
+    max-width:1000px;
+}
+.tippy-box[data-theme~='light'][data-placement^='top'] > .tippy-arrow::before {
+    border-top-color: #2196F3;
+}
+.tippy-content ul {
+    margin-bottom: 0px;
+    padding-left:15px;
+}
   
