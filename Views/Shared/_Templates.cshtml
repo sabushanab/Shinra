@@ -11,7 +11,7 @@
         {{#each this.Members}}
         <li class="list-group-item member-item active" data-id={{id}} data-name="{{name}}">
             <img src="{{avatar}}" width="25" height="25" />
-            &nbsp;&nbsp;&nbsp;{{name}}
+            &nbsp;&nbsp;&nbsp;{{firstName}} <span class="d-sm-inline d-md-none">{{lastNameAbr}}</span><span class="d-none d-md-inline">{{lastName}}</span>
         </li>
         {{/each}}
     </ul>

@@ -125,10 +125,17 @@ function loadPage() {
     getEntryPoint();
     $.get("/XIVAPI/GetFreeCompanyMembers", function (data) {
         $('#nav-section').html(navTemplate(data.freeCompany));
+        $.each(data.freeCompanyMembers, function (i, key) {
+            var nameArr = key.name.split(" ");
+            key.firstName = nameArr[0];
+            key.lastName = nameArr[1];
+            key.lastNameAbr = nameArr[1].charAt(0);
+        });
         var memberTemplateData = {
             "Members": data.freeCompanyMembers
         };
         $('#member-section').html(memberTemplate(memberTemplateData));
+        console.log(data);
     });
 }
 

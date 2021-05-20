@@ -18,6 +18,12 @@ body { font-family: 'Poppins', sans-serif; }
     transition: all 0.3s;
 }
 
+@media only screen and (max-width: 576px) {
+    #sidebar {
+        min-width: 200px;
+    }
+}
+
 #sidebar.active {
     margin-left: -250px;
 }
