@@ -135,7 +135,6 @@ function loadPage() {
             "Members": data.freeCompanyMembers
         };
         $('#member-section').html(memberTemplate(memberTemplateData));
-        console.log(data);
     });
 }
 
