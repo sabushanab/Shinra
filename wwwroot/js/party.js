@@ -7,8 +7,13 @@
 
     var partyList = {};
     $(document).on('click', '.member-item', function (i, e) {
-        var memberId = $(i.target).data("id"),
-            memberName = $(i.target).data("name"),
+        var $target = $(i.target);
+        if ($target.is("span")) {
+            $target = $(i.target).closest("li");
+        }
+
+        var memberId = $target.data("id"),
+            memberName = $target.data("name"),
             $emptyElement = $('.party-member:not(.member-selected):first');
 
         if (memberId in partyList) { return; }
