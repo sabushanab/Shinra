@@ -43,7 +43,7 @@ namespace Shinra.Clients
         public async Task<CharacterContainer> GetCharacter(int id) 
         {
             var request = new HttpRequestMessage(HttpMethod.Get,
-                $"https://xivapi.com/character/{id}?data=CJ,MIMO");
+                $"https://xivapi.com/character/{id}?data=mimo");
             var response = await _httpClient.SendAsync(request);
             CharacterContainer character = null;
             if (response.IsSuccessStatusCode) 
