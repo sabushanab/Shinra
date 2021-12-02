@@ -19,7 +19,7 @@ namespace Shinra.Clients
         public async Task<FreeCompanyMembersContainer> GetFreeCompanyMembers() 
         {
             var request = new HttpRequestMessage(HttpMethod.Get,
-                "https://xivapi.com/freecompany/9230971861226084384?data=FCM");
+                "https://xivapi.com/freecompany/9230971861226084384?data=fcm");
 
             var response = await _httpClient.SendAsync(request);
             FreeCompanyMembersContainer freeCompanyMemberContainer = null;
