@@ -22,13 +22,16 @@ namespace Shinra.Clients
                 "https://xivapi.com/freecompany/9230971861226084384?data=FCM");
 
             var response = await _httpClient.SendAsync(request);
-            FreeCompanyMembersContainer freeCompanyMembers = null;
+            FreeCompanyMembersContainer freeCompanyMemberContainer = null;
             if (response.IsSuccessStatusCode) 
             {
-                freeCompanyMembers = JsonConvert.DeserializeObject<FreeCompanyMembersContainer>(await response.Content.ReadAsStringAsync());
-                CacheService.Set(nameof(XIVAPIClient.GetFreeCompanyMembers), freeCompanyMembers, 20);
+                freeCompanyMemberContainer = JsonConvert.DeserializeObject<FreeCompanyMembersContainer>(await response.Content.ReadAsStringAsync());
+                if (freeCompanyMemberContainer.FreeCompanyMembers != null && freeCompanyMemberContainer.FreeCompanyMembers.Count > 0)
+                {
+                    CacheService.Set(nameof(XIVAPIClient.GetFreeCompanyMembers), freeCompanyMemberContainer, 20);
+                }
             }
-            return freeCompanyMembers;
+            return freeCompanyMemberContainer;
         }
 
         public async Task GetEachFreeCompanyMember() 
