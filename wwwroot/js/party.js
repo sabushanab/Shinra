@@ -140,7 +140,7 @@ function displayCollectibleSection(partyList) {
 }
 
 function loadCharacterData(characterId, partyMounts, partyMinions, resolve) {
-    $.get("/XIVAPI/GetCharacter?id=" + characterId, function (data) {
+    $.get("/Character/GetCharacter?id=" + characterId, function (data) {
         if (data.character == null) {
             $("#mount-section .dynamic-data-section").html(noCharacterDataTemplate({ DataType: "job" }));
             $('#minion-section .dynamic-data-section').html(noCharacterDataTemplate({ DataType: "collectible" }));

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shinra.Actors;
 using Shinra.Clients;
+using Shinra.Services;
 
 namespace Shinra
 {
@@ -27,7 +28,10 @@ namespace Shinra
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
+            services.AddScoped<LodestoneParserService>();
             services.AddHttpClient<IXIVAPIClient, XIVAPIClient>();
+            services.AddHttpClient<ILodestoneClient, LodestoneClient>();
+            services.AddScoped<LodestoneService>();
             services.AddHangfire(c => c.UseMemoryStorage());
             services.AddHangfireServer();
         }

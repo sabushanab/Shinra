@@ -3,6 +3,7 @@ using Akka.Event;
 using Shinra.Clients;
 using Shinra.Messages;
 using Shinra.Messages.Character;
+using Shinra.Services;
 using System;
 
 namespace Shinra.Actors.Character
@@ -12,11 +13,11 @@ namespace Shinra.Actors.Character
         private UpdateCharacterMessage _characterMessage;
         private readonly IActorRef _supervisor;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
-        private readonly IXIVAPIClient _client;
-        public CharacterWorker(IActorRef supervisorRef, IXIVAPIClient client)
+        private readonly LodestoneService _service;
+        public CharacterWorker(IActorRef supervisorRef, LodestoneService service)
         {
             _supervisor = supervisorRef;
-            _client = client;
+            _service = service;
             BecomeReady();
         }
         protected override void PreStart() { }
@@ -47,7 +48,7 @@ namespace Shinra.Actors.Character
         {
             Become(Busy);
             _characterMessage = message;
-            _client.GetCharacter(message.CharacterID).PipeTo(Self, 
+            _service.GetCharacter(message.CharacterID).PipeTo(Self, 
                 success: (successMessage) => new CharacterUpdated(successMessage),
                 failure: (ex) => new FailureMessage(ex));
         }

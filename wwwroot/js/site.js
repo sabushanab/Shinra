@@ -123,7 +123,7 @@ function getEntryPoint() {
 
 function loadPage() {
     getEntryPoint();
-    $.get("/XIVAPI/GetFreeCompanyMembers", function (data) {
+    $.get("/Character/GetFreeCompanyMembers", function (data) {
         $('#nav-section').html(navTemplate(data.freeCompany));
         $.each(data.freeCompanyMembers, function (i, key) {
             var nameArr = key.name.split(" ");
@@ -141,7 +141,8 @@ function loadPage() {
 function displayCharacterPage(id) {
     $('#jobs-section').html(characterDataContainerTemplate({ DataType: "Jobs" })).show();
     $('#collectible-section').html(characterDataContainerTemplate({ DataType: "Collectibles" })).show();
-    $.get("/XIVAPI/GetCharacter?id=" + id, function (data) {
+    $.get("/Character/GetCharacter?id=" + id, function (data) {
+        console.log(data);
         if (data.character == null) {
             $("#jobs-section .dynamic-data-section").html(noCharacterDataTemplate({ DataType: "job" }));
             $('#collectible-section .dynamic-data-section').html(noCharacterDataTemplate({ DataType: "collectible" }));
@@ -159,9 +160,9 @@ function displayCharacterInfo(character, id) {
     var characterInfoTemplateData = {
         ID: id,
         Name: character.name,
-        Gender: gender[character.gender],
-        Race: ffxivData["Race"][character.race].Name,
-        GrandCompany: grandCompanies[character.grandCompany.nameID],
+        Gender: character.gender,
+        Race: character.race,
+        GrandCompany: character.grandCompany.name,
         ShowButton: mainCharacterID && mainCharacterID == id.toString() ? false : true
     };
     $('#info-section').html(characterInfoTemplate(characterInfoTemplateData)).show();
@@ -171,8 +172,9 @@ function displayJobs(character) {
     var jobs = { "Damage": [], "Hand": [], "Tank": [], "Healer": [] };
     for (var classJob in character.classJobs) {
         var key = character.classJobs[classJob];
-        var currentClass = classes[key.jobID];
-        if (key.level == 80) {
+        var currentClass = classes[key.name.toLowerCase()];
+        console.log(key, currentClass);
+        if (key.level == 90) {
             jobs[currentClass.Type].push({ "Icon": currentClass.Icon, "ExpLevel": "", "ExpLevelMax": 100, "Level": key.level, "Name": currentClass.Name, "Width": 100 });
         } else if (key.level != 0) {
             jobs[currentClass.Type].push({ "Icon": currentClass.Icon, "ExpLevel": key.expLevel, "ExpLevelMax": key.expLevelMax, "Level": key.level, "Name": currentClass.Name, "Width": key.expLevel / key.expLevelMax * 100 });
@@ -200,6 +202,7 @@ function displayMounts(data) {
     var ownedMounts = {};
     $.each(data.mounts.sort(compare), function (i, key) {
         var mount = ffxivData["mounts"][key.name.toLowerCase()];
+        console.log(key.name.toLowerCase(), mount);
         ownedMounts[mount.id] = {};
         mount.Owned = true;
         characterCollectibleTemplateData.Mounts.push(ffxivData["mounts"][key.name.toLowerCase()])
@@ -214,6 +217,7 @@ function displayMounts(data) {
     var ownedMinions = {};
     $.each(data.minions.sort(compare), function (i, key) {
         var minion = ffxivData["minions"][key.name.toLowerCase()];
+        console.log(key)
         ownedMinions[minion.id] = {};
         minion.Owned = true;
         characterCollectibleTemplateData.Minions.push(ffxivData["minions"][key.name.toLowerCase()])
@@ -285,67 +289,46 @@ var ffxivData = {};
 
 //Static Enumerations
 var classes = {};
-classes[1] = { "ID": 1, "Icon": "https://xivapi.com/cj/1/gladiator.png", "Name": "gladiator", "Type": "Damage" }
-classes[2] = { "ID": 2, "Icon": "https://xivapi.com/cj/1/pugilist.png", "Name": "pugilist", "Type": "Damage" }
-classes[3] = { "ID": 3, "Icon": "https://xivapi.com/cj/1/marauder.png", "Name": "marauder", "Type": "Damage" }
-classes[4] = { "ID": 4, "Icon": "https://xivapi.com/cj/1/lancer.png", "Name": "lancer", "Type": "Damage" }
-classes[5] = { "ID": 5, "Icon": "https://xivapi.com/cj/1/archer.png", "Name": "archer", "Type": "Damage" }
-classes[6] = { "ID": 6, "Icon": "https://xivapi.com/cj/1/conjurer.png", "Name": "conjurer", "Type": "Damage" }
-classes[7] = { "ID": 7, "Icon": "https://xivapi.com/cj/1/thaumaturge.png", "Name": "thaumaturge", "Type": "Damage" }
-classes[8] = { "ID": 8, "Icon": "https://xivapi.com/cj/1/carpenter.png", "Name": "carpenter", "Type": "Hand" }
-classes[9] = { "ID": 9, "Icon": "https://xivapi.com/cj/1/blacksmith.png", "Name": "blacksmith", "Type": "Hand" }
-classes[10] = { "ID": 10, "Icon": "https://xivapi.com/cj/1/armorer.png", "Name": "armorer", "Type": "Hand" }
-classes[11] = { "ID": 11, "Icon": "https://xivapi.com/cj/1/goldsmith.png", "Name": "goldsmith", "Type": "Hand" }
-classes[12] = { "ID": 12, "Icon": "https://xivapi.com/cj/1/leatherworker.png", "Name": "leatherworker", "Type": "Hand" }
-classes[13] = { "ID": 13, "Icon": "https://xivapi.com/cj/1/weaver.png", "Name": "weaver", "Type": "Hand" }
-classes[14] = { "ID": 14, "Icon": "https://xivapi.com/cj/1/alchemist.png", "Name": "alchemist", "Type": "Hand" }
-classes[15] = { "ID": 15, "Icon": "https://xivapi.com/cj/1/culinarian.png", "Name": "culinarian", "Type": "Hand" }
-classes[16] = { "ID": 16, "Icon": "https://xivapi.com/cj/1/miner.png", "Name": "miner", "Type": "Hand" }
-classes[17] = { "ID": 17, "Icon": "https://xivapi.com/cj/1/botanist.png", "Name": "botanist", "Type": "Hand" }
-classes[18] = { "ID": 18, "Icon": "https://xivapi.com/cj/1/fisher.png", "Name": "fisher", "Type": "Hand" }
-classes[19] = { "ID": 19, "Icon": "https://xivapi.com/cj/1/paladin.png", "Name": "paladin", "Type": "Tank" }
-classes[20] = { "ID": 20, "Icon": "https://xivapi.com/cj/1/monk.png", "Name": "monk", "Type": "Damage" }
-classes[21] = { "ID": 21, "Icon": "https://xivapi.com/cj/1/warrior.png", "Name": "warrior", "Type": "Tank" }
-classes[22] = { "ID": 22, "Icon": "https://xivapi.com/cj/1/dragoon.png", "Name": "dragoon", "Type": "Damage" }
-classes[23] = { "ID": 23, "Icon": "https://xivapi.com/cj/1/bard.png", "Name": "bard", "Type": "Damage" }
-classes[24] = { "ID": 24, "Icon": "https://xivapi.com/cj/1/whitemage.png", "Name": "white mage", "Type": "Healer" }
-classes[25] = { "ID": 25, "Icon": "https://xivapi.com/cj/1/blackmage.png", "Name": "black mage", "Type": "Damage" }
-classes[26] = { "ID": 26, "Icon": "https://xivapi.com/cj/1/arcanist.png", "Name": "arcanist", "Type": "Damage" }
-classes[27] = { "ID": 27, "Icon": "https://xivapi.com/cj/1/summoner.png", "Name": "summoner", "Type": "Damage" }
-classes[28] = { "ID": 28, "Icon": "https://xivapi.com/cj/1/scholar.png", "Name": "scholar", "Type": "Healer" }
-classes[29] = { "ID": 29, "Icon": "https://xivapi.com/cj/1/rogue.png", "Name": "rogue", "Type": "Damage" }
-classes[30] = { "ID": 30, "Icon": "https://xivapi.com/cj/1/ninja.png", "Name": "ninja", "Type": "Damage" }
-classes[31] = { "ID": 31, "Icon": "https://xivapi.com/cj/1/machinist.png", "Name": "machinist", "Type": "Damage" }
-classes[32] = { "ID": 32, "Icon": "https://xivapi.com/cj/1/darkknight.png", "Name": "dark knight", "Type": "Tank" }
-classes[33] = { "ID": 33, "Icon": "https://xivapi.com/cj/1/astrologian.png", "Name": "astrologian", "Type": "Healer" }
-classes[34] = { "ID": 34, "Icon": "https://xivapi.com/cj/1/samurai.png", "Name": "samurai", "Type": "Damage" }
-classes[35] = { "ID": 35, "Icon": "https://xivapi.com/cj/1/redmage.png", "Name": "red mage", "Type": "Damage" }
-classes[36] = { "ID": 36, "Icon": "https://xivapi.com/cj/1/bluemage.png", "Name": "blue mage", "Type": "Damage" }
-classes[37] = { "ID": 37, "Icon": "https://xivapi.com/cj/1/gunbreaker.png", "Name": "gun breaker", "Type": "Tank" }
-classes[38] = { "ID": 38, "Icon": "https://xivapi.com/cj/1/dancer.png", "Name": "dancer", "Type": "Damage" }
-
-var grandCompanies = {};
-grandCompanies[1] = "Maelstrom";
-grandCompanies[2] = "Order of the Twin Adder";
-grandCompanies[3] = "Immortal Flames";
-
-var gender = {};
-gender[1] = "Male";
-gender[2] = "Female";
-
-var tribes = {};
-tribes[1] = "Midlander";
-tribes[2] = "Highlander";
-tribes[3] = "Wildwood";
-tribes[4] = "Duskwight";
-tribes[5] = "Plainsfolk";
-tribes[6] = "Dunesfolk";
-tribes[7] = "Seeker of the Sun";
-tribes[8] = "Keeper of the Moon";
-tribes[9] = "Sea Wolf";
-tribes[10] = "Hellsguard";
-tribes[11] = "Raen";
-tribes[12] = "Xaela";
+classes["gladiator"] = { "ID": 1, "Icon": "https://xivapi.com/cj/1/gladiator.png", "Name": "gladiator", "Type": "Damage" }
+classes["pugilist"] = { "ID": 2, "Icon": "https://xivapi.com/cj/1/pugilist.png", "Name": "pugilist", "Type": "Damage" }
+classes["marauder"] = { "ID": 3, "Icon": "https://xivapi.com/cj/1/marauder.png", "Name": "marauder", "Type": "Damage" }
+classes["lancer"] = { "ID": 4, "Icon": "https://xivapi.com/cj/1/lancer.png", "Name": "lancer", "Type": "Damage" }
+classes["archer"] = { "ID": 5, "Icon": "https://xivapi.com/cj/1/archer.png", "Name": "archer", "Type": "Damage" }
+classes["conjurer"] = { "ID": 6, "Icon": "https://xivapi.com/cj/1/conjurer.png", "Name": "conjurer", "Type": "Damage" }
+classes["thaumaturge"] = { "ID": 7, "Icon": "https://xivapi.com/cj/1/thaumaturge.png", "Name": "thaumaturge", "Type": "Damage" }
+classes["carpenter"] = { "ID": 8, "Icon": "https://xivapi.com/cj/1/carpenter.png", "Name": "carpenter", "Type": "Hand" }
+classes["blacksmith"] = { "ID": 9, "Icon": "https://xivapi.com/cj/1/blacksmith.png", "Name": "blacksmith", "Type": "Hand" }
+classes["armorer"] = { "ID": 10, "Icon": "https://xivapi.com/cj/1/armorer.png", "Name": "armorer", "Type": "Hand" }
+classes["goldsmith"] = { "ID": 11, "Icon": "https://xivapi.com/cj/1/goldsmith.png", "Name": "goldsmith", "Type": "Hand" }
+classes["leatherworker"] = { "ID": 12, "Icon": "https://xivapi.com/cj/1/leatherworker.png", "Name": "leatherworker", "Type": "Hand" }
+classes["weaver"] = { "ID": 13, "Icon": "https://xivapi.com/cj/1/weaver.png", "Name": "weaver", "Type": "Hand" }
+classes["alchemist"] = { "ID": 14, "Icon": "https://xivapi.com/cj/1/alchemist.png", "Name": "alchemist", "Type": "Hand" }
+classes["culinarian"] = { "ID": 15, "Icon": "https://xivapi.com/cj/1/culinarian.png", "Name": "culinarian", "Type": "Hand" }
+classes["miner"] = { "ID": 16, "Icon": "https://xivapi.com/cj/1/miner.png", "Name": "miner", "Type": "Hand" }
+classes["botanist"] = { "ID": 17, "Icon": "https://xivapi.com/cj/1/botanist.png", "Name": "botanist", "Type": "Hand" }
+classes["fisher"] = { "ID": 18, "Icon": "https://xivapi.com/cj/1/fisher.png", "Name": "fisher", "Type": "Hand" }
+classes["paladin"] = { "ID": 19, "Icon": "https://xivapi.com/cj/1/paladin.png", "Name": "paladin", "Type": "Tank" }
+classes["monk"] = { "ID": 20, "Icon": "https://xivapi.com/cj/1/monk.png", "Name": "monk", "Type": "Damage" }
+classes["warrior"] = { "ID": 21, "Icon": "https://xivapi.com/cj/1/warrior.png", "Name": "warrior", "Type": "Tank" }
+classes["dragoon"] = { "ID": 22, "Icon": "https://xivapi.com/cj/1/dragoon.png", "Name": "dragoon", "Type": "Damage" }
+classes["bard"] = { "ID": 23, "Icon": "https://xivapi.com/cj/1/bard.png", "Name": "bard", "Type": "Damage" }
+classes["white mage"] = { "ID": 24, "Icon": "https://xivapi.com/cj/1/whitemage.png", "Name": "white mage", "Type": "Healer" }
+classes["black mage"] = { "ID": 25, "Icon": "https://xivapi.com/cj/1/blackmage.png", "Name": "black mage", "Type": "Damage" }
+classes["arcanist"] = { "ID": 26, "Icon": "https://xivapi.com/cj/1/arcanist.png", "Name": "arcanist", "Type": "Damage" }
+classes["summoner"] = { "ID": 27, "Icon": "https://xivapi.com/cj/1/summoner.png", "Name": "summoner", "Type": "Damage" }
+classes["scholar"] = { "ID": 28, "Icon": "https://xivapi.com/cj/1/scholar.png", "Name": "scholar", "Type": "Healer" }
+classes["rogue"] = { "ID": 29, "Icon": "https://xivapi.com/cj/1/rogue.png", "Name": "rogue", "Type": "Damage" }
+classes["ninja"] = { "ID": 30, "Icon": "https://xivapi.com/cj/1/ninja.png", "Name": "ninja", "Type": "Damage" }
+classes["machinist"] = { "ID": 31, "Icon": "https://xivapi.com/cj/1/machinist.png", "Name": "machinist", "Type": "Damage" }
+classes["dark knight"] = { "ID": 32, "Icon": "https://xivapi.com/cj/1/darkknight.png", "Name": "dark knight", "Type": "Tank" }
+classes["astrologian"] = { "ID": 33, "Icon": "https://xivapi.com/cj/1/astrologian.png", "Name": "astrologian", "Type": "Healer" }
+classes["samurai"] = { "ID": 34, "Icon": "https://xivapi.com/cj/1/samurai.png", "Name": "samurai", "Type": "Damage" }
+classes["red mage"] = { "ID": 35, "Icon": "https://xivapi.com/cj/1/redmage.png", "Name": "red mage", "Type": "Damage" }
+classes["blue mage"] = { "ID": 36, "Icon": "https://xivapi.com/cj/1/bluemage.png", "Name": "blue mage", "Type": "Damage" }
+classes["gunbreaker"] = { "ID": 37, "Icon": "https://xivapi.com/cj/1/gunbreaker.png", "Name": "gunbreaker", "Type": "Tank" }
+classes["dancer"] = { "ID": 38, "Icon": "https://xivapi.com/cj/1/dancer.png", "Name": "dancer", "Type": "Damage" }
+classes["sage"] = { "ID": 39, "Icon": "https://xivapi.com/cj/1/sage.png", "Name": "sage", "Type": "Healer" }
+classes["reaper"] = { "ID": 40, "Icon": "https://xivapi.com/cj/1/reaper.png", "Name": "reaper", "Type": "Damage" }
 
 function compare(a, b) {
     if (a.name < b.name) {
