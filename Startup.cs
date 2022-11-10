@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Shinra.Actors;
 using Shinra.Clients;
+using Shinra.Services;
 
 namespace Shinra
 {

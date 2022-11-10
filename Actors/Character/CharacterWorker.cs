@@ -3,6 +3,7 @@ using Akka.Event;
 using Shinra.Clients;
 using Shinra.Messages;
 using Shinra.Messages.Character;
+using Shinra.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace Shinra.Actors.Character
         public CharacterWorker(IActorRef supervisorRef, BlizzardParserService service)
         {
             _supervisor = supervisorRef;
-            _client = client;
+            _service = service;
             BecomeReady();
         }
         protected override void PreStart() { }
