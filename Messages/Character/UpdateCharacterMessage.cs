@@ -2,10 +2,12 @@
 {
     public class UpdateCharacterMessage
     {
-        public int CharacterID { get; private set; }
-        public UpdateCharacterMessage(int characterID) 
+        public string Realm { get; private set; }
+        public string CharacterName { get; private set; }
+        public UpdateCharacterMessage(string realm, string characterName) 
         {
-            CharacterID = characterID;
+            Realm = realm;
+            CharacterName = characterName;
         }
     }
 }

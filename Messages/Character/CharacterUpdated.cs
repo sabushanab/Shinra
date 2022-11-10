@@ -1,11 +1,13 @@
+using Shinra.Clients.Models;
+
 namespace Shinra.Messages.Character
 {
     public class CharacterUpdated
     {
-        public CharacterContainer Character { get; private set; }
-        public CharacterUpdated(CharacterContainer character) 
+        public CharacterStatistics Statistics { get; private set; }
+        public CharacterUpdated(CharacterStatistics statistics) 
         {
-            Character = character;
+            Statistics = statistics;
         }
     }
 }

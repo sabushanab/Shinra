@@ -4,6 +4,7 @@ using Shinra.Clients;
 using Shinra.Messages;
 using Shinra.Messages.Character;
 using System;
+using System.Threading.Tasks;
 
 namespace Shinra.Actors.Character
 {
@@ -12,8 +13,8 @@ namespace Shinra.Actors.Character
         private UpdateCharacterMessage _characterMessage;
         private readonly IActorRef _supervisor;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
-        private readonly IXIVAPIClient _client;
-        public CharacterWorker(IActorRef supervisorRef, IXIVAPIClient client)
+        private readonly BlizzardParserService _service;
+        public CharacterWorker(IActorRef supervisorRef, BlizzardParserService service)
         {
             _supervisor = supervisorRef;
             _client = client;
@@ -33,12 +34,16 @@ namespace Shinra.Actors.Character
         protected override void PreRestart(Exception reason, object message)
         {
             UpdateCharacterMessage characterMessage = message as UpdateCharacterMessage;
-            _logger.Error(reason, "Error processing character @CharacterID", characterMessage.CharacterID);
+            _logger.Error(reason, "Error processing character @CharacterID-@Realm", characterMessage.CharacterName, characterMessage.Realm);
             base.PreRestart(reason, message);
         }
+
         private void Busy()
         {
-            Receive<CharacterUpdated>(message => BecomeReady());
+            Receive<CharacterUpdated>(message => {
+                CacheService.Set(message.Statistics.character.name, message.Statistics, 90);
+                BecomeReady();
+            });
             Receive<FailureMessage>(message => BecomeReady());
             ReceiveAny(message => _logger.Warning("Unhandled Message while busy {@message}", message));
         }
@@ -47,7 +52,7 @@ namespace Shinra.Actors.Character
         {
             Become(Busy);
             _characterMessage = message;
-            _client.GetCharacter(message.CharacterID).PipeTo(Self, 
+            _service.ParseCharacter(message.Realm, message.CharacterName).PipeTo(Self, 
                 success: (successMessage) => new CharacterUpdated(successMessage),
                 failure: (ex) => new FailureMessage(ex));
         }

@@ -2,6 +2,7 @@ using Akka.Actor;
 using Shinra.Clients;
 using Shinra.Messages;
 using Shinra.Messages.Character;
+using Shinra.Services;
 using System.Collections.Generic;
 namespace Shinra.Actors.Character
 {
@@ -9,19 +10,19 @@ namespace Shinra.Actors.Character
     {
         readonly Queue<UpdateCharacterMessage> _queue1 = new Queue<UpdateCharacterMessage>();
         private readonly Queue<IActorRef> _availableWorkers;
-        private readonly IXIVAPIClient _client;
-        private int _numberOfWorkers = System.Environment.ProcessorCount * 2;
+        private readonly BlizzardParserService _service;
+        private int _numberOfWorkers = 2;
         protected override void PreStart()
         {
             for (var i = 0; i < _numberOfWorkers; i++)
             {
-                Context.ActorOf(Props.Create<CharacterWorker>(Self, _client));
+                Context.ActorOf(Props.Create<CharacterWorker>(Self, _service));
             }
         }
-        public CharacterSupervisor(IXIVAPIClient client)
+        public CharacterSupervisor(BlizzardParserService service)
         {
             _availableWorkers = new Queue<IActorRef>();
-            _client = client;
+            _service = service;
             Receive<WorkerAvailable>(message => MakeWorkerAvailable(message));
             Receive<UpdateCharacterMessage>(message => UpdateCharacterData(message));
             Receive<GetQueueLength>(message => GetQueueLength());
