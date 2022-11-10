@@ -27,7 +27,8 @@ namespace Shinra
                 .AddNewtonsoftJson(options =>
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
-            services.AddHttpClient<IXIVAPIClient, XIVAPIClient>();
+            services.AddHttpClient<IBlizzardClient, BlizzardClient>();
+            services.AddScoped<BlizzardParserService>();
             services.AddHangfire(c => c.UseMemoryStorage());
             services.AddHangfireServer();
         }
@@ -61,7 +62,6 @@ namespace Shinra
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHangfireDashboard();
             });
-
             Scheduler.Configure();
             ActorService.Configure(app.ApplicationServices);
         }

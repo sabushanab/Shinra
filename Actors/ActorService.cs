@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Shinra.Actors.Character;
 using Shinra.Clients;
+using Shinra.Services;
 using System;
 
 namespace Shinra.Actors
@@ -13,7 +14,10 @@ namespace Shinra.Actors
         public static void Configure(IServiceProvider provider)
         {
             actorSystem = ActorSystem.Create("ActorSystem");
-            CharacterSupervisor = actorSystem.ActorOf(Props.Create<CharacterSupervisor>(provider.GetRequiredService<IXIVAPIClient>()), "character-supervisor");
+            using (var scope = provider.CreateScope())
+            {
+                CharacterSupervisor = actorSystem.ActorOf(Props.Create<CharacterSupervisor>(scope.ServiceProvider.GetRequiredService<BlizzardParserService>()), "character-supervisor");
+            }
         }
     }
 }
