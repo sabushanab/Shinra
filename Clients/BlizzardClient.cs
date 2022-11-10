@@ -33,6 +33,16 @@ namespace Shinra.Clients
             return JsonSerializer.Deserialize<CharacterStatistics>(await response.Content.ReadAsStringAsync());
         }
 
+        public async Task<CharacterProfile> GetCharacterProfile(string realm, string characterName)
+        {
+            var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://us.api.blizzard.com/profile/wow/character/{realm}/{characterName}?namespace=profile-us&locale=en_us&access_token={accessToken}");
+
+            var response = await _httpClient.SendAsync(request);
+            return JsonSerializer.Deserialize<CharacterProfile>(await response.Content.ReadAsStringAsync());
+        }
+
         public async Task<string> GetAccessToken()
         {
             string clientId = _config["ClientID"];

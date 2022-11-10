@@ -42,7 +42,7 @@ namespace Shinra.Actors.Character
         private void Busy()
         {
             Receive<CharacterUpdated>(message => {
-                CacheService.Set(message.Statistics.character.name, message.Statistics, 90);
+                CacheService.Set(message.Container.CharacterName, message.Container, 90);
                 BecomeReady();
             });
             Receive<FailureMessage>(message => BecomeReady());
