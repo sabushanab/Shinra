@@ -1,5 +1,6 @@
 using Hangfire;
 using Shinra.Clients;
+using Shinra.Services;
 using System;
 
 namespace Shinra
@@ -9,12 +10,9 @@ namespace Shinra
         public Scheduler() {}
         public static void Configure() 
         {
-            //RecurringJob.RemoveIfExists(nameof(XIVAPIClient.GetFreeCompanyMembers));
-            //RecurringJob.AddOrUpdate(nameof(XIVAPIClient.GetFreeCompanyMembers), (IXIVAPIClient client) => client.GetFreeCompanyMembers(),
-            //"*/10 * * * *");
-            //RecurringJob.RemoveIfExists(nameof(XIVAPIClient.GetEachFreeCompanyMember));
-            //RecurringJob.AddOrUpdate(nameof(XIVAPIClient.GetEachFreeCompanyMember), (IXIVAPIClient client) => client.GetEachFreeCompanyMember(),
-            //"*/39 * * * *");
+            RecurringJob.RemoveIfExists(nameof(IBlizzardDataAccess.UpdateAllCharacterPoints));
+            RecurringJob.AddOrUpdate(nameof(IBlizzardDataAccess.UpdateAllCharacterPoints), (IBlizzardDataAccess client) => client.UpdateAllCharacterPoints(),
+            "*/39 * * * *");
         }
     }
 }

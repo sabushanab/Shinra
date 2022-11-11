@@ -30,6 +30,7 @@ namespace Shinra
                 );
             services.AddHttpClient<IBlizzardClient, BlizzardClient>();
             services.AddScoped<BlizzardParserService>();
+            services.AddScoped<IBlizzardDataAccess, BlizzardDataAccess>();
             services.AddHangfire(c => c.UseMemoryStorage());
             services.AddHangfireServer();
         }

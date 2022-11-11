@@ -4,12 +4,12 @@ namespace Shinra.Services.Models
 {
     public class PointCategory
     {
-        public string CategoryName { get; set; }
+        public string Name { get; set; }
         public double TotalPoints { get; set; }
-        public List<PointSubCategory> SubCategories { get; set; } = new List<PointSubCategory>();
-        public PointCategory(string categoryName)
+        public Dictionary<string, double>SubCategories { get; set; } = new Dictionary<string, double>();
+        public PointCategory(string name)
         {
-            CategoryName = categoryName;
+            Name = name;
         }
     }
 }

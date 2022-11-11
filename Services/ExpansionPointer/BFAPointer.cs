@@ -1,6 +1,4 @@
-﻿using Shinra.Clients.Models;
-using Shinra.Services.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Shinra.Services.ExpansionPointer

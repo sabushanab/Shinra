@@ -9,6 +9,7 @@ namespace Shinra.Services.ExpansionPointer
     {
         private readonly Dictionary<string, double> _pointableInstances;
         private readonly bool _currentExpansion;
+        private readonly List<string> _ignoreDifficulties = new List<string>() { "Heroic", "Mythic" };
         private readonly Regex instanceRegex = new Regex(@"\({1}(normal|heroic|mythic)?\s?(.+)\){1}", RegexOptions.IgnoreCase);
         public ExpansionPointerBase(Dictionary<string, double> availableInstances, bool currentExpansion)
         {
@@ -20,16 +21,24 @@ namespace Shinra.Services.ExpansionPointer
             var pointCategory = new PointCategory(expansion.name);
             foreach (var instance in expansion.statistics)
             {
-                var instanceName = instanceRegex.Match(instance.name).Groups?[2]?.Value;
-                if (instanceName != null)
+                var groups = instanceRegex.Match(instance.name).Groups;
+                var difficulty = groups[1].Value ?? "";
+                var instanceName = groups[2].Value;
+                var fullInstanceName = !string.IsNullOrEmpty(difficulty) ? $"{difficulty} {instanceName}" : $"{instanceName}";
+                if (!_currentExpansion && _ignoreDifficulties.Contains(difficulty))
                 {
-                    var subCategory = new PointSubCategory(instanceName);
+                    continue;
+                }
+                else if (instanceName != null)
+                {
                     if (_pointableInstances.ContainsKey(instanceName))
                     {
                         var pointAmount = _pointableInstances[instanceName];
-                        subCategory.Points = pointAmount;
-                        pointCategory.TotalPoints += pointAmount;
-                        pointCategory.SubCategories.Add(subCategory);
+                        if (!pointCategory.SubCategories.ContainsKey(instanceName))
+                        {
+                            pointCategory.SubCategories.Add(fullInstanceName, pointAmount);
+                            pointCategory.TotalPoints += pointAmount;
+                        }
                     }
                 }
             }

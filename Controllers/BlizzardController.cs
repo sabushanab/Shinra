@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shinra.Clients;
 using Shinra.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shinra.Controllers
@@ -12,10 +9,12 @@ namespace Shinra.Controllers
     {
         private IBlizzardClient _client;
         private BlizzardParserService _service;
-        public BlizzardController(IBlizzardClient client, BlizzardParserService service)
+        private IBlizzardDataAccess _db;
+        public BlizzardController(IBlizzardClient client, BlizzardParserService service, IBlizzardDataAccess db)
         {
             _client = client;
             _service = service;
+            _db = db;
         }
 
         public async Task<ActionResult> GetCharacterStatistics(string realm, string characterName)
@@ -25,7 +24,13 @@ namespace Shinra.Controllers
 
         public async Task<ActionResult> GetCharacterPoints(string realm, string characterName)
         {
-            return Ok(await _service.ParseCharacter(realm, characterName));
+            var parsedCharacter = await _service.ParseCharacter(realm, characterName);
+            return Ok(await _db.SaveCharacterPoints(parsedCharacter));
+        }
+
+        public async Task<ActionResult> GetAllCharacters()
+        {
+            return Ok(await _db.GetAllCharacterPoints());
         }
     }
 }

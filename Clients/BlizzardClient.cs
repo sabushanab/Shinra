@@ -1,15 +1,13 @@
-﻿using Shinra.Services;
+﻿using Microsoft.Extensions.Configuration;
+using Shinra.Clients.Models;
+using Shinra.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json.Serialization;
 using System.Text.Json;
-using Shinra.Clients.Models;
-using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace Shinra.Clients
 {
@@ -52,9 +50,11 @@ namespace Shinra.Clients
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials)));
 
-            List<KeyValuePair<string, string>> requestData = new List<KeyValuePair<string, string>>();
-            requestData.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
-            requestData.Add(new KeyValuePair<string, string>("scope", "wow.profile"));
+            List<KeyValuePair<string, string>> requestData = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("grant_type", "client_credentials"),
+                new KeyValuePair<string, string>("scope", "wow.profile")
+            };
             FormUrlEncodedContent requestBody = new FormUrlEncodedContent(requestData);
 
             var request = await _httpClient.PostAsync("https://oauth.battle.net/token", requestBody);

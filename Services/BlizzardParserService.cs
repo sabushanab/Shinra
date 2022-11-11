@@ -17,28 +17,37 @@ namespace Shinra.Services
         {
             _client = client;
         }
+
         public async Task<PointContainer> ParseCharacter(string realm, string characterName)
         {
             var statistics = await _client.GetCharacterStatistics(realm, characterName);
             var profile = await _client.GetCharacterProfile(realm, characterName);
-            var pointContainer = new PointContainer(realm, characterName, profile.level, profile.character_class.name);
+            return ParseContainer(statistics, profile);
+        }
+
+        public PointContainer ParseCharacter(CharacterStatistics statistics, CharacterProfile profile)
+        {
+            return ParseContainer(statistics, profile);
+        }
+
+        public PointContainer ParseContainer(CharacterStatistics statistics, CharacterProfile profile)
+        {
+            var pointContainer = new PointContainer(statistics.character.realm.name, statistics.character.name, profile.level, profile.character_class.name);
             pointContainer.TotalPoints += profile.level;
-            foreach(var category in statistics.categories)
+            foreach (var category in statistics.categories)
             {
-                switch(category.name)
+                switch (category.name)
                 {
                     case string name when name.Equals("Dungeons & Raids", StringComparison.OrdinalIgnoreCase):
                         pointContainer = ParseExpansions(category, pointContainer);
+                        break;
+                    case string name when name.Equals("Deaths", StringComparison.OrdinalIgnoreCase):
+                        pointContainer = ParseDeaths(category, pointContainer);
                         break;
                 }
             }
 
             return pointContainer;
-        }
-
-        public PointContainer ParseCharacter(CharacterStatistics statistics)
-        {
-            return new PointContainer("realmTest", "nameTest", 0, "classTest");
         }
 
         public PointContainer ParseExpansions(Category category, PointContainer container)
@@ -55,6 +64,21 @@ namespace Shinra.Services
                 }
             }
             container.Categories.AddRange(pointCategories);
+            return container;
+        }
+
+        public PointContainer ParseDeaths(Category category, PointContainer container)
+        {
+            foreach(var statistic in category.statistics)
+            {
+                switch(statistic.name)
+                {
+                    case string name when name.Equals("Total deaths", StringComparison.OrdinalIgnoreCase):
+                        container.HasDied = statistic.quantity > 0;
+                        return container;
+                }
+            }
+
             return container;
         }
     }
