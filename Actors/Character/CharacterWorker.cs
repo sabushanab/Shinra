@@ -15,16 +15,20 @@ namespace Shinra.Actors.Character
         private readonly IActorRef _supervisor;
         private readonly ILoggingAdapter _logger = Context.GetLogger();
         private readonly BlizzardParserService _service;
-        public CharacterWorker(IActorRef supervisorRef, BlizzardParserService service)
+        private readonly IBlizzardClient _client;
+        private readonly IBlizzardDataAccess _db;
+        public CharacterWorker(IActorRef supervisorRef, BlizzardParserService service, IBlizzardClient client, IBlizzardDataAccess db)
         {
             _supervisor = supervisorRef;
             _service = service;
+            _client = client;
+            _db = db;
             BecomeReady();
         }
         protected override void PreStart() { }
         private void Ready()
         {
-            Receive<UpdateCharacterMessage>(message => ProcessNotifyCandidateMessage(message));
+            Receive<UpdateCharacterMessage>(message => ProcessUpdateCharacterMessage(message));
             ReceiveAny(message => _logger.Warning("Unhandled Message while ready {@message}", message));
         }
         private void BecomeReady()
@@ -41,19 +45,33 @@ namespace Shinra.Actors.Character
 
         private void Busy()
         {
-            Receive<CharacterUpdated>(message => {
-                CacheService.Set(message.Container.CharacterName, message.Container, 90);
-                BecomeReady();
-            });
+            Receive<GetCharacterStatistics>(message => ProcessGetCharacterStatisticsMessage(message));
+            Receive<GetCharacterProfile>(message => ProcessGetCharacterProfileMessage(message));
+            Receive<CharacterUpdated>(message => BecomeReady());
             Receive<FailureMessage>(message => BecomeReady());
             ReceiveAny(message => _logger.Warning("Unhandled Message while busy {@message}", message));
         }
 
-        void ProcessNotifyCandidateMessage(UpdateCharacterMessage message)
+        void ProcessUpdateCharacterMessage(UpdateCharacterMessage message)
         {
             Become(Busy);
             _characterMessage = message;
-            _service.ParseCharacter(message.Realm, message.CharacterName).PipeTo(Self, 
+            _client.GetCharacterStatistics(message.Realm, message.CharacterName).PipeTo(Self, 
+                success: (successMessage) => new GetCharacterStatistics(successMessage),
+                failure: (ex) => new FailureMessage(ex));
+        }
+
+        void ProcessGetCharacterStatisticsMessage(GetCharacterStatistics message)
+        {
+            _client.GetCharacterProfile(_characterMessage.Realm, _characterMessage.CharacterName).PipeTo(Self,
+                success: (successMessage) => new GetCharacterProfile(message.Statistics, successMessage),
+                failure: (ex) => new FailureMessage(ex));
+        }
+
+        void ProcessGetCharacterProfileMessage(GetCharacterProfile message)
+        {
+            var pointContainer = _service.ParseCharacter(message.Statistics, message.Profile);
+            _db.SaveCharacterPoints(pointContainer).PipeTo(Self,
                 success: (successMessage) => new CharacterUpdated(successMessage),
                 failure: (ex) => new FailureMessage(ex));
         }

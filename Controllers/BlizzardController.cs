@@ -32,5 +32,11 @@ namespace Shinra.Controllers
         {
             return Ok(await _db.GetAllCharacterPoints());
         }
+
+        public async Task<ActionResult> UpdateAllCharacterPoints()
+        {
+            await _db.UpdateAllCharacterPoints();
+            return Ok("done");
+        }
     }
 }

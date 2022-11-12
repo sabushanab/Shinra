@@ -1,1 +1,16 @@
-﻿
+﻿body {
+    background-color: #F4F5F6;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 10px
+}
+
+.container-lg {
+    border-bottom: 0.5px solid #D0D4D9;
+}
+
+header {
+    background: linear-gradient(179.29deg, #FFD566 4.79%, #FFC220 161.87%);
+}

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Shinra.Actors;
 using Shinra.Messages.Character;
 using Shinra.Services.Models;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace Shinra.Services
             using (var db = new LiteDatabaseAsync(_config["DatabaseLocation"]))
             {
                 var col = db.GetCollection<PointContainer>("character_points");
-                var results = await col.Query().ToListAsync();
+                var results = await col.Query().OrderByDescending(x => x.TotalPoints).ToListAsync();
 
                 return results;
             }
@@ -44,12 +45,14 @@ namespace Shinra.Services
             {
                 var col = db.GetCollection<PointContainer>("character_points");
                 await col.EnsureIndexAsync(x => x._id);
+                await col.EnsureIndexAsync(x => x.TotalPoints);
                 var characterExists = await col.ExistsAsync(x => x._id == container._id);
                 if (!characterExists && container.HasDied)
                 {
                     container._notAdded = true;
                     return container;
                 }
+                container.LastUpdated = DateTime.UtcNow;
                 var upsertResult = await col.UpsertAsync(container);
 
                 return container;
@@ -64,7 +67,7 @@ namespace Shinra.Services
                 var results = await col.Query().Where(x => !x.HasDied).ToListAsync();
                 foreach(var result in results)
                 {
-                    ActorService.CharacterSupervisor.Tell(new UpdateCharacterMessage(result.Realm, result.CharacterName));
+                    ActorService.CharacterSupervisor.Tell(new UpdateCharacterMessage(result.Realm.ToLower(), result.CharacterName.ToLower()));
                 }
             }
         }

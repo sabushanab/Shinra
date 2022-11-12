@@ -11,18 +11,22 @@ namespace Shinra.Actors.Character
         readonly Queue<UpdateCharacterMessage> _queue1 = new Queue<UpdateCharacterMessage>();
         private readonly Queue<IActorRef> _availableWorkers;
         private readonly BlizzardParserService _service;
+        private readonly IBlizzardClient _client;
+        private readonly IBlizzardDataAccess _db;
         private int _numberOfWorkers = 2;
         protected override void PreStart()
         {
             for (var i = 0; i < _numberOfWorkers; i++)
             {
-                Context.ActorOf(Props.Create<CharacterWorker>(Self, _service));
+                Context.ActorOf(Props.Create<CharacterWorker>(Self, _service, _client, _db));
             }
         }
-        public CharacterSupervisor(BlizzardParserService service)
+        public CharacterSupervisor(BlizzardParserService service, IBlizzardClient client, IBlizzardDataAccess db)
         {
             _availableWorkers = new Queue<IActorRef>();
             _service = service;
+            _client = client;
+            _db = db;
             Receive<WorkerAvailable>(message => MakeWorkerAvailable(message));
             Receive<UpdateCharacterMessage>(message => UpdateCharacterData(message));
             Receive<GetQueueLength>(message => GetQueueLength());

@@ -16,7 +16,11 @@ namespace Shinra.Actors
             actorSystem = ActorSystem.Create("ActorSystem");
             using (var scope = provider.CreateScope())
             {
-                CharacterSupervisor = actorSystem.ActorOf(Props.Create<CharacterSupervisor>(scope.ServiceProvider.GetRequiredService<BlizzardParserService>()), "character-supervisor");
+                CharacterSupervisor = actorSystem.ActorOf(Props.Create<CharacterSupervisor>(
+                    scope.ServiceProvider.GetRequiredService<BlizzardParserService>(),
+                    scope.ServiceProvider.GetRequiredService<IBlizzardClient>(),
+                    scope.ServiceProvider.GetRequiredService<IBlizzardDataAccess>()
+                ), "character-supervisor");
             }
         }
     }

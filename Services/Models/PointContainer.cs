@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using System;
 using System.Collections.Generic;
 
 namespace Shinra.Services.Models
@@ -18,6 +19,7 @@ namespace Shinra.Services.Models
         public string CharacterClass { get; set; }
         public double TotalPoints { get; set; }
         public bool HasDied { get; set; }
+        public DateTime LastUpdated { get; set; }
 
         public List<PointCategory> Categories { get; set; } = new List<PointCategory>();
         public PointContainer(string realm, string characterName, int level, string characterClass) 

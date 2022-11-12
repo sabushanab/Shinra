@@ -29,8 +29,8 @@ namespace Shinra
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
                 );
             services.AddHttpClient<IBlizzardClient, BlizzardClient>();
-            services.AddScoped<BlizzardParserService>();
-            services.AddScoped<IBlizzardDataAccess, BlizzardDataAccess>();
+            services.AddSingleton<BlizzardParserService>();
+            services.AddSingleton<IBlizzardDataAccess, BlizzardDataAccess>();
             services.AddHangfire(c => c.UseMemoryStorage());
             services.AddHangfireServer();
         }
