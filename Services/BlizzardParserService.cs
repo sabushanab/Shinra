@@ -21,6 +21,10 @@ namespace Shinra.Services
         public async Task<PointContainer> ParseCharacter(string realm, string characterName)
         {
             var statistics = await _client.GetCharacterStatistics(realm, characterName);
+            if (statistics.character == null) 
+            { 
+                return new PointContainer(realm, characterName, 0, ""); 
+            }
             var profile = await _client.GetCharacterProfile(realm, characterName);
             return ParseContainer(statistics, profile);
         }

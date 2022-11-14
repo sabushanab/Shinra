@@ -22,6 +22,7 @@ namespace Shinra.Services.Models
         public DateTime LastUpdated { get; set; }
 
         public List<PointCategory> Categories { get; set; } = new List<PointCategory>();
+        public PointContainer() { }
         public PointContainer(string realm, string characterName, int level, string characterClass) 
         {
             Realm = realm;

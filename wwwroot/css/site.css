@@ -1,16 +1,137 @@
 ﻿body {
-    background-color: #F4F5F6;
+    background-color:#212529;
 }
 
 .container {
-    background-color: #fff;
-    border-radius: 10px
+    border-radius: 10px; 
+    background-color: rgba(255,255,255,.05);
+    color: #fff;
+}
+
+header .container {
+    color: #333;
 }
 
 .container-lg {
-    border-bottom: 0.5px solid #D0D4D9;
+    color: #333;
 }
 
 header {
     background: linear-gradient(179.29deg, #FFD566 4.79%, #FFC220 161.87%);
 }
+
+.point-badge {
+    --bs-btn-padding-y: 0.05rem;
+}
+
+.breakdown-link {
+    color: #333;
+}
+
+#leaderboard .accordion-button:nth-child(odd) {
+    background-color: #212529;
+    color: white;
+}
+
+#leaderboard .accordion-button:after {
+    background-image: var(--bs-accordion-btn-active-icon);
+}
+
+#leaderboard .accordion-button:nth-child(even) {
+    color: white;
+ 
+}
+
+.accordion-header {
+    --bs-accordion-btn-padding-y: .3rem;
+}
+
+.accordion-body {
+    background-color: #212529;
+    color: white;
+}
+
+.point-badge {
+    position: absolute;
+    right: 50px;
+}
+
+.level-badge {
+    position: absolute;
+    right: 125px;
+}
+
+@media screen and (max-width: 768px) {
+    .point-badge {
+        position: absolute;
+        right: 30px;
+    }
+
+    .level-badge {
+        position: absolute;
+        right: 105px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #add-character {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .accordion-body {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
+.modal-body {
+    background-color: #212529;
+    color: white;
+}
+
+.offcanvas-body {
+    background-color: #212529;
+    color: white;
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: block;
+    border-top: 4px solid #FFF;
+    border-right: 4px solid transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.list-group {
+    --bs-list-group-bg: rgba(255,255,255,.05);
+    --bs-list-group-color: white;
+}
+
+.loader::after {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border-bottom: 4px solid #FF3D00;
+        border-left: 4px solid transparent;
+    }
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+} 

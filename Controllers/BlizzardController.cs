@@ -25,6 +25,10 @@ namespace Shinra.Controllers
         public async Task<ActionResult> GetCharacterPoints(string realm, string characterName)
         {
             var parsedCharacter = await _service.ParseCharacter(realm, characterName);
+            if (parsedCharacter.Level == 0)
+            {
+                return Ok(parsedCharacter);
+            }
             return Ok(await _db.SaveCharacterPoints(parsedCharacter));
         }
 
