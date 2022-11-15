@@ -71,8 +71,9 @@ function characterTemplate(data) {
     return `
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-${data._id}">
-                <button class="accordion-button collapsed px-1 px-md-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${data._id}" aria-controls="collapse-${data._id}">
-                    <img src="/img/${data.characterClass.toLowerCase()}_warcraftflat.png" width="25" height="25" class="me-2" /> 
+                <button class="accordion-button collapsed px-1 px-md-3${data.hasDied ? ' character-died' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${data._id}" aria-controls="collapse-${data._id}">
+                    <img src="/img/${data.characterClass.toLowerCase()}_warcraftflat.png" width="25" height="25" class="me-2" />
+                    ${data.hasDied ? '<img src="/img/skull.png" width="25" height="25" class="me-2" />' : ''}
                     ${data.characterName}<span class="d-none d-md-inline-block">-${data.realm}</span>
                     <div class="ms-2 level-badge">
                         <span class="badge bg-success">Level ${data.level}</span>
@@ -99,11 +100,17 @@ addCharacter.addEventListener("click", function (event) {
         characterName.classList.add("is-invalid");
     }
     if (realm.value && characterName.value) {
+        addCharacter.setAttribute("disabled", "");
+        addCharacter.innerHTML = `
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding Character...
+        `;
         fetch(`/blizzard/getcharacterpoints?realm=${realm.value.toLowerCase()}&characterName=${characterName.value.toLowerCase()}`)
             .then((response) => response.json())
             .then((data) => {
                 realm.value = "";
                 characterName.value = "";
+                addCharacter.removeAttribute("disabled");
+                addCharacter.innerHTML = `Add Character`;
                 var isMobile = ["xs", "sm"].indexOf(getViewport()) > -1;
                 if (data.level == 0) {
                     if (isMobile) {
@@ -116,6 +123,20 @@ addCharacter.addEventListener("click", function (event) {
                         addCharacterModalElement.querySelector(".modal-title").innerHTML = "Character Not Found";
                         addCharacterModalElement.querySelector(".modal-body").innerHTML = `
                             <p>Could not find character: ${data.characterName}-${data.realm}</p>
+                        `;
+                        addCharacterModal.show();
+                    }
+                } else if (data._notAdded) {
+                    if (isMobile) {
+                        addCharacterCanvasElement.querySelector("#offcanvasTopLabel").innerHTML = "Character Not Hardcore";
+                        addCharacterCanvasElement.querySelector(".offcanvas-body").innerHTML = `
+                            <p>Character has deaths already and is not hardcore: ${data.characterName}-${data.realm}</p>
+                        `;
+                        addCharacterCanvas.show();
+                    } else {
+                        addCharacterModalElement.querySelector(".modal-title").innerHTML = "Character Not Hardcore";
+                        addCharacterModalElement.querySelector(".modal-body").innerHTML = `
+                            <p>Character has deaths already and is not hardcore: ${data.characterName}-${data.realm}</p>
                         `;
                         addCharacterModal.show();
                     }

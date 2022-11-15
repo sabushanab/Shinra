@@ -95,6 +95,10 @@ header {
     color: white;
 }
 
+.character-died {
+    background-color: #3F1414 !important;
+}
+
 .loader {
     width: 48px;
     height: 48px;
