@@ -72,7 +72,7 @@ function characterTemplate(data) {
         <div class="accordion-item">
             <h2 class="accordion-header" id="heading-${data._id}">
                 <button class="accordion-button collapsed px-1 px-md-3${data.hasDied ? ' character-died' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${data._id}" aria-controls="collapse-${data._id}">
-                    <img src="/img/${data.characterClass.toLowerCase()}_warcraftflat.png" width="25" height="25" class="me-2" />
+                    <img src="/img/${data.characterClass.replace(" ", "").toLowerCase()}_warcraftflat.png" width="25" height="25" class="me-2" />
                     ${data.hasDied ? '<img src="/img/skull.png" width="25" height="25" class="me-2" />' : ''}
                     ${data.characterName}<span class="d-none d-md-inline-block">-${data.realm}</span>
                     <div class="ms-2 level-badge">
