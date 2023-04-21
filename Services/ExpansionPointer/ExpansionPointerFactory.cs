@@ -15,7 +15,8 @@ namespace Shinra.Services.ExpansionPointer
             { "Warlords of Draenor", new WarlordsPointer() },
             { "Legion", new LegionPointer() },
             { "Battle for Azeroth", new BFAPointer() },
-            { "Shadowlands", new ShadowlandsPointer() }
+            { "Shadowlands", new ShadowlandsPointer() },
+            { "Dragonflight", new DragonFlightPointer() }
         };
         public ExpansionPointerFactory() { }
         public IExpansionPointer GetInstance(string expansion)

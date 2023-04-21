@@ -33,6 +33,7 @@ namespace Shinra.Services.ExpansionPointer
                 { "Dire Maul - Capital Gardens", 1 },
                 { "Dire Maul - Gordok Commons", 1 },
                 { "Dire Maul - Warpwood Quarter", 1 },
+                { "Maraudon", 1 },
                 { "Maraudon - Earth Song Falls", 1 },
                 { "Maraudon - Foulspore Cavern", 1 },
                 { "Maraudon - The Wicked Quarter", 1 }
