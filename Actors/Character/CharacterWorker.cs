@@ -45,8 +45,9 @@ namespace Shinra.Actors.Character
 
         private void Busy()
         {
-            Receive<GetCharacterStatistics>(message => ProcessGetCharacterStatisticsMessage(message));
             Receive<GetCharacterProfile>(message => ProcessGetCharacterProfileMessage(message));
+            Receive<GetCharacterStatistics>(message => ProcessGetCharacterStatisticsMessage(message));
+            Receive<GetMythicPlusScore>(message => ProcessCharacterPointsWithMythic(message));
             Receive<CharacterUpdated>(message => BecomeReady());
             Receive<FailureMessage>(message => BecomeReady());
             ReceiveAny(message => _logger.Warning("Unhandled Message while busy {@message}", message));
@@ -56,21 +57,55 @@ namespace Shinra.Actors.Character
         {
             Become(Busy);
             _characterMessage = message;
-            _client.GetCharacterStatistics(message.Realm, message.CharacterName).PipeTo(Self, 
-                success: (successMessage) => new GetCharacterStatistics(successMessage),
+            if (message.Level == 70)
+            {
+                Self.Tell(new GetCharacterProfile(new Clients.Models.CharacterProfile()
+                {
+                    character_class = new Clients.Models.CharacterClass() { name = message.CharacterClass },
+                    name = message.CharacterName,
+                    level = message.Level.Value
+                }));
+            }
+            else
+            {
+                _client.GetCharacterProfile(_characterMessage.Realm, _characterMessage.CharacterName).PipeTo(Self,
+                    success: (successMessage) => new GetCharacterProfile(successMessage),
+                    failure: (ex) => new FailureMessage(ex));
+            }
+        }
+
+        void ProcessGetCharacterProfileMessage(GetCharacterProfile message)
+        {
+            _client.GetCharacterStatistics(_characterMessage.Realm, _characterMessage.CharacterName).PipeTo(Self,
+                success: (successMessage) => new GetCharacterStatistics(successMessage, message.Profile),
                 failure: (ex) => new FailureMessage(ex));
         }
 
         void ProcessGetCharacterStatisticsMessage(GetCharacterStatistics message)
         {
-            _client.GetCharacterProfile(_characterMessage.Realm, _characterMessage.CharacterName).PipeTo(Self,
-                success: (successMessage) => new GetCharacterProfile(message.Statistics, successMessage),
+            if (_characterMessage.Level == 70)
+            {
+                _client.GetMythicPlusSeasonDetails(_characterMessage.Realm, _characterMessage.CharacterName).PipeTo(Self,
+                    success: (successMessage) => new GetMythicPlusScore(successMessage, message.Statistics, message.Profile),
+                    failure: (ex) => new FailureMessage(ex));
+            }
+            else
+            {
+                ProcessCharacterPoints(message);
+            }
+        }
+
+        void ProcessCharacterPoints(GetCharacterStatistics message)
+        {
+            var pointContainer = _service.ParseCharacter(message.Statistics, message.Profile);
+            _db.SaveCharacterPoints(pointContainer).PipeTo(Self,
+                success: (successMessage) => new CharacterUpdated(successMessage),
                 failure: (ex) => new FailureMessage(ex));
         }
 
-        void ProcessGetCharacterProfileMessage(GetCharacterProfile message)
+        void ProcessCharacterPointsWithMythic(GetMythicPlusScore message)
         {
-            var pointContainer = _service.ParseCharacter(message.Statistics, message.Profile);
+            var pointContainer = _service.ParseCharacter(message.Statistics, message.Profile, message.MythicScore);
             _db.SaveCharacterPoints(pointContainer).PipeTo(Self,
                 success: (successMessage) => new CharacterUpdated(successMessage),
                 failure: (ex) => new FailureMessage(ex));

@@ -31,6 +31,26 @@ namespace Shinra.Clients
             return JsonSerializer.Deserialize<CharacterStatistics>(await response.Content.ReadAsStringAsync());
         }
 
+        public async Task<CharacterMythicPlusScore> GetMythicPlusScore(string realm, string characterName)
+        {
+            var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://us.api.blizzard.com/profile/wow/character/{realm}/{characterName}/mythic-keystone-profile?namespace=profile-us&locale=en_us&access_token={accessToken}");
+
+            var response = await _httpClient.SendAsync(request);
+            return JsonSerializer.Deserialize<CharacterMythicPlusScore>(await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task<CharacterMythicPlusSeasonDetails> GetMythicPlusSeasonDetails(string realm, string characterName)
+        {
+            var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://us.api.blizzard.com/profile/wow/character/{realm}/{characterName}/mythic-keystone-profile/season/10?namespace=profile-us&locale=en_us&access_token={accessToken}");
+
+            var response = await _httpClient.SendAsync(request);
+            return JsonSerializer.Deserialize<CharacterMythicPlusSeasonDetails>(await response.Content.ReadAsStringAsync());
+        }
+
         public async Task<CharacterProfile> GetCharacterProfile(string realm, string characterName)
         {
             var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());

@@ -22,6 +22,16 @@ namespace Shinra.Controllers
             return Ok(await _client.GetCharacterStatistics(realm, characterName));
         }
 
+        public async Task<ActionResult> GetMythicPlusScore(string realm, string characterName)
+        {
+            return Ok(await _client.GetMythicPlusScore(realm, characterName));
+        }
+
+        public async Task<ActionResult> GetMythicPlusSeasonDetails(string realm, string characterName)
+        {
+            return Ok(await _client.GetMythicPlusSeasonDetails(realm, characterName));
+        }
+
         public async Task<ActionResult> GetCharacterProfile(string realm, string characterName)
         {
             return Ok(await _client.GetCharacterProfile(realm, characterName));

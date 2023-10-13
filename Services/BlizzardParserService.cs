@@ -26,15 +26,20 @@ namespace Shinra.Services
                 return new PointContainer(realm, characterName, 0, ""); 
             }
             var profile = await _client.GetCharacterProfile(realm, characterName);
-            return ParseContainer(statistics, profile);
+            CharacterMythicPlusSeasonDetails mythicPlusDetails = null;
+            if (profile.level == 70)
+            {
+                mythicPlusDetails = await _client.GetMythicPlusSeasonDetails(realm, characterName);
+            }
+            return ParseContainer(statistics, profile, mythicPlusDetails);
         }
 
-        public PointContainer ParseCharacter(CharacterStatistics statistics, CharacterProfile profile)
+        public PointContainer ParseCharacter(CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
         {
-            return ParseContainer(statistics, profile);
+            return ParseContainer(statistics, profile, mythicPlusDetails);
         }
 
-        public PointContainer ParseContainer(CharacterStatistics statistics, CharacterProfile profile)
+        public PointContainer ParseContainer(CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
         {
             var pointContainer = new PointContainer(statistics.character.realm.name, statistics.character.name, profile.level, profile.character_class.name);
             pointContainer.TotalPoints += profile.level;
@@ -50,6 +55,8 @@ namespace Shinra.Services
                         break;
                 }
             }
+            pointContainer.MythicPlusScore = mythicPlusDetails?.mythic_rating?.rating ?? 0;
+            pointContainer.TotalPoints += mythicPlusDetails?.mythic_rating?.rating ?? 0;
 
             return pointContainer;
         }
