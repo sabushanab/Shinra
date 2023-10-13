@@ -12,7 +12,7 @@ namespace Shinra.Services.ExpansionPointer
             {
                 { "Hellfire Ramparts", 1 },
                 { "The Blood Furnace", 1 },
-                { "The Slave Pens", 1 },
+                { "Slave Pens", 1 },
                 { "The Underbog", 1 },
                 { "Mana-Tombs", 1 },
                 { "Auchenai Crypts", 1 },

@@ -67,7 +67,7 @@ namespace Shinra.Services
                 var results = await col.Query().Where(x => !x.HasDied).ToListAsync();
                 foreach(var result in results)
                 {
-                    ActorService.CharacterSupervisor.Tell(new UpdateCharacterMessage(result.Realm.ToLower(), result.CharacterName.ToLower()));
+                    ActorService.CharacterSupervisor.Tell(new UpdateCharacterMessage(result.Realm.ToLower(), result.CharacterName.ToLower(), result.Level, result.CharacterClass));
                 }
             }
         }

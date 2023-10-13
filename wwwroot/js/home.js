@@ -42,9 +42,19 @@ function pointOverviewTemplate(data) {
                 Level ${data.level}
                 <span class="badge bg-primary rounded-pill float-end">${data.level}</span>
             </li>
+            ${data.mythicPlusScore > 0 ? mythicPlusTemplate(data) : ''}
             ${data.categories.map(categoryTemplate).join("")}
         </div>
     `;
+}
+
+function mythicPlusTemplate(data) {
+    return `
+        <li class="list-group-item">
+            Mythic Plus Rating
+            <span class="badge bg-primary rounded-pill float-end">${data.mythicPlusScore}</span>
+        </li>
+    `
 }
 
 function categoryTemplate(data) {
@@ -75,10 +85,8 @@ function characterTemplate(data) {
                     <img src="/img/${data.characterClass.replace(" ", "").toLowerCase()}_warcraftflat.png" width="25" height="25" class="me-2" />
                     ${data.hasDied ? '<img src="/img/skull.png" width="25" height="25" class="me-2" />' : ''}
                     ${data.characterName}<span class="d-none d-md-inline-block">-${data.realm}</span>
-                    <div class="ms-2 level-badge">
-                        <span class="badge bg-success">Level ${data.level}</span>
-                    </div>
                     <div class="ms-2 point-badge">
+                        <span class="badge bg-success">Level ${data.level}</span>
                         <span class="badge bg-info">${data.totalPoints} Points</span>
                     </div>
                 </button>

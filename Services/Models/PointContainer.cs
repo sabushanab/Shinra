@@ -18,6 +18,7 @@ namespace Shinra.Services.Models
         public int Level { get; set; }
         public string CharacterClass { get; set; }
         public double TotalPoints { get; set; }
+        public double MythicPlusScore { get; set; }
         public bool HasDied { get; set; }
         public DateTime LastUpdated { get; set; }
 
