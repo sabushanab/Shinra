@@ -138,4 +138,17 @@ header {
     100% {
         transform: rotate(360deg);
     }
-} 
+}
+
+.dselect-wrapper {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+    border-top-left-radius: 0px;
+}
+
+button.form-select {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}

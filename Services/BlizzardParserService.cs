@@ -18,30 +18,30 @@ namespace Shinra.Services
             _client = client;
         }
 
-        public async Task<PointContainer> ParseCharacter(string realm, string characterName)
+        public async Task<PointContainer> ParseCharacter(string region, string realm, string characterName)
         {
-            var statistics = await _client.GetCharacterStatistics(realm, characterName);
+            var statistics = await _client.GetCharacterStatistics(region, realm, characterName);
             if (statistics.character == null) 
             { 
-                return new PointContainer(realm, characterName, 0, ""); 
+                return new PointContainer(region, realm, characterName, 0, ""); 
             }
-            var profile = await _client.GetCharacterProfile(realm, characterName);
+            var profile = await _client.GetCharacterProfile(region, realm, characterName);
             CharacterMythicPlusSeasonDetails mythicPlusDetails = null;
             if (profile.level == 70)
             {
-                mythicPlusDetails = await _client.GetMythicPlusSeasonDetails(realm, characterName);
+                mythicPlusDetails = await _client.GetMythicPlusSeasonDetails(region, realm, characterName);
             }
-            return ParseContainer(statistics, profile, mythicPlusDetails);
+            return ParseContainer(region, statistics, profile, mythicPlusDetails);
         }
 
-        public PointContainer ParseCharacter(CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
+        public PointContainer ParseCharacter(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
         {
-            return ParseContainer(statistics, profile, mythicPlusDetails);
+            return ParseContainer(region, statistics, profile, mythicPlusDetails);
         }
 
-        public PointContainer ParseContainer(CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
+        public PointContainer ParseContainer(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
         {
-            var pointContainer = new PointContainer(statistics.character.realm.name, statistics.character.name, profile.level, profile.character_class.name);
+            var pointContainer = new PointContainer(region, statistics.character.realm.name, statistics.character.name, profile.level, profile.character_class.name);
             pointContainer.TotalPoints += profile.level;
             foreach (var category in statistics.categories)
             {
