@@ -23,7 +23,7 @@ namespace Shinra.Config
                 .MinimumLevel.Override("System.Net.Http.HttpClient", LogEventLevel.Warning)
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning);
 
-            logger.WriteTo.MongoDBBson($"{configuration["MongoConnectionString"]}/reach", "log", period: TimeSpan.FromSeconds(1), cappedMaxSizeMb: 500, cappedMaxDocuments: 2000);
+            logger.WriteTo.MongoDBBson($"{configuration["MongoConnectionString"]}", "log", period: TimeSpan.FromSeconds(1), cappedMaxSizeMb: 500, cappedMaxDocuments: 2000);
 
             return logger;
         }
