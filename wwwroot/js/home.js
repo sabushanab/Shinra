@@ -96,6 +96,7 @@ function pageTemplate(page, currentPage) {
 }
 
 function pointOverviewTemplate(data) {
+    var lastUpdatedDate = new Date(data.lastUpdated);
     return `
         <ul class="list-group">
             <li class="list-group-item">
@@ -104,7 +105,10 @@ function pointOverviewTemplate(data) {
             </li>
             ${data.mythicPlusScore > 0 ? mythicPlusTemplate(data) : ''}
             ${data.categories.map(categoryTemplate).join("")}
-        </div>
+            <li class="list-group-item">
+                Last Updated - ${lastUpdatedDate.toString()}
+            </li>
+        </ul>
     `;
 }
 
