@@ -1,23 +1,31 @@
 ﻿var leaderboard = document.getElementById("leaderboard"),
     addCharacter = document.getElementById("add-character"),
+    usRegion = document.getElementById("us-region"),
+    euRegion = document.getElementById("eu-region"),
     realm = document.getElementById("realm"),
     characterName = document.getElementById("character-name"),
     dataDictionary = {},
     addCharacterModalElement = document.getElementById('add-character-modal'),
     addCharacterModal = bootstrap.Modal.getOrCreateInstance(addCharacterModalElement),
     addCharacterCanvasElement = document.getElementById('add-character-canvas'),
-    addCharacterCanvas = new bootstrap.Offcanvas(addCharacterCanvasElement);
+    addCharacterCanvas = new bootstrap.Offcanvas(addCharacterCanvasElement),
+    pagination = document.getElementById("pagination"),
+    pageSize = 50;
 
-function getAllCharacters() {
-    fetch('/blizzard/GetAllCharacters')
+handleRegionSelect(usRegion.value);
+function getAllCharacters(page) {
+    fetch(`/blizzard/GetAllCharacters?page=${page}`)
         .then((response) => response.json())
-        .then((data) => buildCharacterLeaderboards(data));
+        .then((data) => {
+            buildCharacterLeaderboards(data);
+            buildPagination(data, page);
+        });
 }
 
 function buildCharacterLeaderboards(data) {
     dataDictionary = {};
     var leaderboardContent = `
-        ${data.map(characterTemplate).join("")}
+        ${data.characters.map(characterTemplate).join("")}
     `;
     leaderboard.innerHTML = `${leaderboardContent}`;
     bindAccordionEvents();
@@ -33,6 +41,58 @@ function bindAccordionEvents() {
             accordionBody.innerHTML = pointOverviewTemplate(characterData);
         })
     }
+}
+
+function buildPagination(data, page) {
+    maxPage = Math.floor(data.totalCount / pageSize);
+    maxPage = maxPage == 0 ? 1 : maxPage;
+    if (maxPage == 1) { return; }
+    var paginationContent = `
+        ${previousPagesTemplate(page)}
+        ${pageTemplate(page, true)}
+        ${nextPagesTemplate(page, maxPage)}
+    `;
+    pagination.innerHTML = paginationContent;
+    bindPaginationEvents();
+}
+
+function bindPaginationEvents() {
+    var elements = document.getElementsByClassName("page-link");
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].addEventListener("click", function (event) {
+            event.preventDefault();
+            if (event.target.classList.contains("active")) {
+                return;
+            }
+            getAllCharacters(parseInt(event.target.dataset.page));
+        })
+    }
+}
+
+function previousPagesTemplate(page) {
+    var previousPages = [];
+    for (var i = page - 1; i >= 1; i--) {
+        if (previousPages.length >= 3) {
+            break;
+        }
+        previousPages.push(pageTemplate(i, false));
+    }
+    return previousPages.join("");
+}
+
+function nextPagesTemplate(page, maxPage) {
+    var nextPages = [];
+    for (var i = page + 1; i <= maxPage; i++) {
+        if (nextPages.length >= 3) {
+            break;
+        }
+        nextPages.push(pageTemplate(i, false));
+    }
+    return nextPages.join("");
+}
+
+function pageTemplate(page, currentPage) {
+    return `<li class="page-item ${currentPage ? "active" : ""}"><a class="page-link" href="#" data-page="${page}">${page}</a></li>`;
 }
 
 function pointOverviewTemplate(data) {
@@ -108,11 +168,12 @@ addCharacter.addEventListener("click", function (event) {
         characterName.classList.add("is-invalid");
     }
     if (realm.value && characterName.value) {
+        let region = document.querySelector(".region-btn.active").value;
         addCharacter.setAttribute("disabled", "");
         addCharacter.innerHTML = `
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding Character...
         `;
-        fetch(`/blizzard/getcharacterpoints?realm=${realm.value.toLowerCase()}&characterName=${characterName.value.toLowerCase()}`)
+        fetch(`/blizzard/getcharacterpoints?realm=${realm.value.toLowerCase()}&characterName=${characterName.value.toLowerCase()}&region=${region.toLowerCase()}`)
             .then((response) => response.json())
             .then((data) => {
                 realm.value = "";
@@ -168,6 +229,51 @@ addCharacter.addEventListener("click", function (event) {
     }
 });
 
+usRegion.addEventListener("click", function (event) {
+    if (event.target.classList.contains("active")) {
+        return;
+    } else {
+        usRegion.classList.add("active");
+        euRegion.classList.remove("active");
+        handleRegionSelect(event.target.value);
+    }
+});
+
+euRegion.addEventListener("click", function (event) {
+    if (event.target.classList.contains("active")) {
+        return;
+    } else {
+        euRegion.classList.add("active");
+        usRegion.classList.remove("active");
+        handleRegionSelect(event.target.value);
+    }
+});
+
+function handleRegionSelect(value) {
+    fetch(`/blizzard/GetRealms?region=${value}`)
+        .then((response) => response.json())
+        .then((data) => buildRegionSelect(data));
+}
+
+function buildRegionSelect(regions) {
+    var optionHtml = `
+        <option value="" disabled selected>--Select Realm--</option>
+        ${regions.map(region => optionTemplate(region)).join("")}
+    `;
+    realm.innerHTML = optionHtml;
+    const config = {
+        search: true,
+        creatable: true,
+        maxHeight: '250px',
+        size: '',
+    }
+    dselect(realm, config)
+}
+
+function optionTemplate(region) {
+    return `<option value="${region}">${region}</option>`;
+}
+
 function getViewport() {
     const width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
     if (width <= 576) return 'xs'
@@ -177,4 +283,4 @@ function getViewport() {
     return 'xl'
 }
 
-getAllCharacters();
+getAllCharacters(1);

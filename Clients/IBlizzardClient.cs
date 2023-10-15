@@ -5,10 +5,11 @@ namespace Shinra.Clients
 {
     public interface IBlizzardClient
     {
-        Task<CharacterStatistics> GetCharacterStatistics(string realm, string characterName);
-        Task<CharacterMythicPlusScore> GetMythicPlusScore(string realm, string characterName);
-        Task<CharacterMythicPlusSeasonDetails> GetMythicPlusSeasonDetails(string realm, string characterName);
+        Task<RealmContainer> GetRealms(string region);
+        Task<CharacterStatistics> GetCharacterStatistics(string region, string realm, string characterName);
+        Task<CharacterMythicPlusScore> GetMythicPlusScore(string region, string realm, string characterName);
+        Task<CharacterMythicPlusSeasonDetails> GetMythicPlusSeasonDetails(string region, string realm, string characterName);
         
-        Task<CharacterProfile> GetCharacterProfile(string realm, string characterName);
+        Task<CharacterProfile> GetCharacterProfile(string region, string realm, string characterName);
     }
 }

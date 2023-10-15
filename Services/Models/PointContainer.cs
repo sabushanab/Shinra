@@ -1,5 +1,4 @@
-﻿using LiteDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Shinra.Services.Models
@@ -8,11 +7,11 @@ namespace Shinra.Services.Models
     {
         public string _id {  get
             {
-                return $"{CharacterName}-{Realm}";
+                return $"{Region}-{CharacterName}-{Realm}";
             } 
         }
-        [BsonIgnore]
         public bool _notAdded { get; set; }
+        public string Region { get; set; }
         public string Realm { get; set; }
         public string CharacterName { get; set; }
         public int Level { get; set; }
@@ -24,8 +23,9 @@ namespace Shinra.Services.Models
 
         public List<PointCategory> Categories { get; set; } = new List<PointCategory>();
         public PointContainer() { }
-        public PointContainer(string realm, string characterName, int level, string characterClass) 
+        public PointContainer(string region, string realm, string characterName, int level, string characterClass) 
         {
+            Region = region;
             Realm = realm;
             CharacterName = characterName;
             Level = level;

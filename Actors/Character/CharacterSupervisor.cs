@@ -8,6 +8,7 @@ namespace Shinra.Actors.Character
 {
     public class CharacterSupervisor : ReceiveActor
     {
+        private IActorRef _metricActor;
         readonly Queue<UpdateCharacterMessage> _queue1 = new Queue<UpdateCharacterMessage>();
         private readonly Queue<IActorRef> _availableWorkers;
         private readonly BlizzardParserService _service;
@@ -16,9 +17,10 @@ namespace Shinra.Actors.Character
         private int _numberOfWorkers = 2;
         protected override void PreStart()
         {
+            _metricActor = Context.ActorOf(Props.Create<CharacterMetricsActor>());
             for (var i = 0; i < _numberOfWorkers; i++)
             {
-                Context.ActorOf(Props.Create<CharacterWorker>(Self, _service, _client, _db));
+                Context.ActorOf(Props.Create<CharacterWorker>(Self, _service, _client, _db, _metricActor));
             }
         }
         public CharacterSupervisor(BlizzardParserService service, IBlizzardClient client, IBlizzardDataAccess db)
@@ -31,6 +33,7 @@ namespace Shinra.Actors.Character
             Receive<UpdateCharacterMessage>(message => UpdateCharacterData(message));
             Receive<GetQueueLength>(message => GetQueueLength());
             Receive<GetAvailableWorkers>(message => GetAvailableWorkers());
+            Receive<CharacterMetricsRequest>(message => _metricActor.Forward(message));
         }
         void UpdateCharacterData(UpdateCharacterMessage message)
         {

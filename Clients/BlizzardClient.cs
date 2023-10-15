@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Shinra.Clients.Models;
 using Shinra.Services;
 using System;
@@ -21,41 +22,52 @@ namespace Shinra.Clients
             _config = config;
         }
 
-        public async Task<CharacterStatistics> GetCharacterStatistics(string realm, string characterName)
+        [ResponseCache(Duration = 180, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new string[] { "region" })]
+        public async Task<RealmContainer> GetRealms(string region)
         {
             var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
             var request = new HttpRequestMessage(HttpMethod.Get,
-                $"https://us.api.blizzard.com/profile/wow/character/{realm}/{characterName}/achievements/statistics?namespace=profile-us&locale=en_us&access_token={accessToken}");
+                $"https://{region}.api.blizzard.com/data/wow/realm/index?namespace=dynamic-{region}&locale=en_us&access_token={accessToken}");
+
+            var response = await _httpClient.SendAsync(request);
+            return JsonSerializer.Deserialize<RealmContainer>(await response.Content.ReadAsStringAsync());
+        }
+
+        public async Task<CharacterStatistics> GetCharacterStatistics(string region, string realm, string characterName)
+        {
+            var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://{region}.api.blizzard.com/profile/wow/character/{realm}/{characterName}/achievements/statistics?namespace=profile-{region}&locale=en_us&access_token={accessToken}");
 
             var response = await _httpClient.SendAsync(request);
             return JsonSerializer.Deserialize<CharacterStatistics>(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<CharacterMythicPlusScore> GetMythicPlusScore(string realm, string characterName)
+        public async Task<CharacterMythicPlusScore> GetMythicPlusScore(string region, string realm, string characterName)
         {
             var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
             var request = new HttpRequestMessage(HttpMethod.Get,
-                $"https://us.api.blizzard.com/profile/wow/character/{realm}/{characterName}/mythic-keystone-profile?namespace=profile-us&locale=en_us&access_token={accessToken}");
+                $"https://{region}.api.blizzard.com/profile/wow/character/{realm}/{characterName}/mythic-keystone-profile?namespace=profile-{region}&locale=en_us&access_token={accessToken}");
 
             var response = await _httpClient.SendAsync(request);
             return JsonSerializer.Deserialize<CharacterMythicPlusScore>(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<CharacterMythicPlusSeasonDetails> GetMythicPlusSeasonDetails(string realm, string characterName)
+        public async Task<CharacterMythicPlusSeasonDetails> GetMythicPlusSeasonDetails(string region, string realm, string characterName)
         {
             var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
             var request = new HttpRequestMessage(HttpMethod.Get,
-                $"https://us.api.blizzard.com/profile/wow/character/{realm}/{characterName}/mythic-keystone-profile/season/10?namespace=profile-us&locale=en_us&access_token={accessToken}");
+                $"https://{region}.api.blizzard.com/profile/wow/character/{realm}/{characterName}/mythic-keystone-profile/season/10?namespace=profile-{region}&locale=en_us&access_token={accessToken}");
 
             var response = await _httpClient.SendAsync(request);
             return JsonSerializer.Deserialize<CharacterMythicPlusSeasonDetails>(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task<CharacterProfile> GetCharacterProfile(string realm, string characterName)
+        public async Task<CharacterProfile> GetCharacterProfile(string region, string realm, string characterName)
         {
             var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
             var request = new HttpRequestMessage(HttpMethod.Get,
-                $"https://us.api.blizzard.com/profile/wow/character/{realm}/{characterName}?namespace=profile-us&locale=en_us&access_token={accessToken}");
+                $"https://{region}.api.blizzard.com/profile/wow/character/{realm}/{characterName}?namespace=profile-{region}&locale=en_us&access_token={accessToken}");
 
             var response = await _httpClient.SendAsync(request);
             return JsonSerializer.Deserialize<CharacterProfile>(await response.Content.ReadAsStringAsync());
