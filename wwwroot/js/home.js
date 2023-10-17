@@ -106,7 +106,7 @@ function pointOverviewTemplate(data) {
             ${data.mythicPlusScore > 0 ? mythicPlusTemplate(data) : ''}
             ${data.categories.map(categoryTemplate).join("")}
             <li class="list-group-item">
-                Last Updated - ${lastUpdatedDate.toString()}
+                Last Updated - ${lastUpdatedDate.toLocaleString()}
             </li>
         </ul>
     `;
