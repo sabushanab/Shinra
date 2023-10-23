@@ -52,7 +52,7 @@ namespace Shinra.Controllers
                 });
             }
             var parsedCharacter = await _service.ParseCharacter(region, realm, characterName);
-            if (parsedCharacter.Level == 0)
+            if (parsedCharacter.Level == -1)
             {
                 return Ok(parsedCharacter);
             }
