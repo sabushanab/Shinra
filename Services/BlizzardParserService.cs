@@ -27,16 +27,19 @@ namespace Shinra.Services
             }
             var profile = await _client.GetCharacterProfile(region, realm, characterName);
             CharacterAchievements achievements = null;
-            if (profile.level >= 50)
-            {
-                achievements = await _client.GetCharacterAchievements(region, realm, characterName);
-            }
+
             CharacterMythicPlusSeasonDetails mythicPlusDetails = null;
             if (profile.level == 70)
             {
                 mythicPlusDetails = await _client.GetMythicPlusSeasonDetails(region, realm, characterName);
             }
-            return ParseContainer(region, statistics, profile, mythicPlusDetails, achievements, newCharacter: true);
+            var parsedContainer = ParseContainer(region, statistics, profile, mythicPlusDetails, true);
+            if (profile.level >= 50 && !parsedContainer.HasDied)
+            {
+                achievements = await _client.GetCharacterAchievements(region, realm, characterName);
+                ParseAchievements(achievements, parsedContainer);
+            }
+            return parsedContainer;
         }
 
         public PointContainer ParseCharacter(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
@@ -44,7 +47,7 @@ namespace Shinra.Services
             return ParseContainer(region, statistics, profile, mythicPlusDetails);
         }
 
-        public PointContainer ParseContainer(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null, CharacterAchievements achievements = null, bool newCharacter = false)
+        public PointContainer ParseContainer(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null, bool newCharacter = false)
         {
             var pointContainer = new PointContainer(region, statistics.character.realm.name, statistics.character.name, profile.level, profile.character_class.name);
             pointContainer.TotalPoints += profile.level;
@@ -63,8 +66,9 @@ namespace Shinra.Services
             }
             pointContainer.MythicPlusScore = mythicPlusDetails?.mythic_rating?.rating ?? 0;
             pointContainer.TotalPoints += mythicPlusDetails?.mythic_rating?.rating ?? 0;
-            if (achievements != null && !pointContainer.HasDied)
+            if (profile.level >= 50 && !pointContainer.HasDied && newCharacter)
             {
+                var achievements = _client.GetCharacterAchievements(region, statistics.character.realm.name, statistics.character.name);
                 ParseAchievements(achievements, pointContainer);
             }
 
