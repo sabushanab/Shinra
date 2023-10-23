@@ -63,7 +63,7 @@ namespace Shinra.Services
             }
             pointContainer.MythicPlusScore = mythicPlusDetails?.mythic_rating?.rating ?? 0;
             pointContainer.TotalPoints += mythicPlusDetails?.mythic_rating?.rating ?? 0;
-            if (achievements != null)
+            if (achievements != null && !pointContainer.HasDied)
             {
                 ParseAchievements(achievements, pointContainer);
             }
