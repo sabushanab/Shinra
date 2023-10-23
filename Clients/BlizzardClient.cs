@@ -43,6 +43,16 @@ namespace Shinra.Clients
             return JsonSerializer.Deserialize<CharacterStatistics>(await response.Content.ReadAsStringAsync());
         }
 
+        public async Task<CharacterAchievements> GetCharacterAchievements(string region, string realm, string characterName)
+        {
+            var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());
+            var request = new HttpRequestMessage(HttpMethod.Get,
+                $"https://{region}.api.blizzard.com/profile/wow/character/{realm}/{characterName}/achievements?namespace=profile-{region}&locale=en_us&access_token={accessToken}");
+
+            var response = await _httpClient.SendAsync(request);
+            return JsonSerializer.Deserialize<CharacterAchievements>(await response.Content.ReadAsStringAsync());
+        }
+
         public async Task<CharacterMythicPlusScore> GetMythicPlusScore(string region, string realm, string characterName)
         {
             var accessToken = await CacheService.GetAndSetAsync("blizzard_access_token", () => GetAccessToken());

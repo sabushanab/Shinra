@@ -23,15 +23,20 @@ namespace Shinra.Services
             var statistics = await _client.GetCharacterStatistics(region, realm, characterName);
             if (statistics.character == null) 
             { 
-                return new PointContainer(region, realm, characterName, 0, ""); 
+                return new PointContainer(region, realm, characterName, -1, ""); 
             }
             var profile = await _client.GetCharacterProfile(region, realm, characterName);
+            CharacterAchievements achievements = null;
+            if (profile.level >= 50)
+            {
+                achievements = await _client.GetCharacterAchievements(region, realm, characterName);
+            }
             CharacterMythicPlusSeasonDetails mythicPlusDetails = null;
             if (profile.level == 70)
             {
                 mythicPlusDetails = await _client.GetMythicPlusSeasonDetails(region, realm, characterName);
             }
-            return ParseContainer(region, statistics, profile, mythicPlusDetails);
+            return ParseContainer(region, statistics, profile, mythicPlusDetails, achievements, newCharacter: true);
         }
 
         public PointContainer ParseCharacter(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
@@ -39,10 +44,11 @@ namespace Shinra.Services
             return ParseContainer(region, statistics, profile, mythicPlusDetails);
         }
 
-        public PointContainer ParseContainer(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null)
+        public PointContainer ParseContainer(string region, CharacterStatistics statistics, CharacterProfile profile, CharacterMythicPlusSeasonDetails mythicPlusDetails = null, CharacterAchievements achievements = null, bool newCharacter = false)
         {
             var pointContainer = new PointContainer(region, statistics.character.realm.name, statistics.character.name, profile.level, profile.character_class.name);
             pointContainer.TotalPoints += profile.level;
+            pointContainer.NewCharacter = newCharacter;
             foreach (var category in statistics.categories)
             {
                 switch (category.name)
@@ -57,6 +63,33 @@ namespace Shinra.Services
             }
             pointContainer.MythicPlusScore = mythicPlusDetails?.mythic_rating?.rating ?? 0;
             pointContainer.TotalPoints += mythicPlusDetails?.mythic_rating?.rating ?? 0;
+            if (achievements != null)
+            {
+                ParseAchievements(achievements, pointContainer);
+            }
+
+            return pointContainer;
+        }
+
+        public PointContainer ParseAchievements(CharacterAchievements characterAchievements, PointContainer pointContainer)
+        {
+            /* level achievement IDs */
+            var levelAchievements = new List<int>() { 9, 14782, 14783, 15805 };
+            long highestTimeStamp = 0;
+            List<Achievement> matchedAchievements = new List<Achievement>();
+            foreach (var achievement in characterAchievements.achievements)
+            {
+                if (levelAchievements.Contains(achievement.id))
+                {
+                    matchedAchievements.Add(achievement);
+                    if (highestTimeStamp > 0 && achievement.completed_timestamp == highestTimeStamp)
+                    {
+                        pointContainer.Boosted = true;
+                        break;
+                    }
+                    highestTimeStamp = achievement.completed_timestamp;
+                }
+            }
 
             return pointContainer;
         }
