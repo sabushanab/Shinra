@@ -66,11 +66,6 @@ namespace Shinra.Services
             }
             pointContainer.MythicPlusScore = mythicPlusDetails?.mythic_rating?.rating ?? 0;
             pointContainer.TotalPoints += mythicPlusDetails?.mythic_rating?.rating ?? 0;
-            if (profile.level >= 50 && !pointContainer.HasDied && newCharacter)
-            {
-                var achievements = _client.GetCharacterAchievements(region, statistics.character.realm.name, statistics.character.name);
-                ParseAchievements(achievements, pointContainer);
-            }
 
             return pointContainer;
         }
