@@ -116,7 +116,7 @@ function mythicPlusTemplate(data) {
     return `
         <li class="list-group-item">
             Mythic Plus Rating
-            <span class="badge bg-primary rounded-pill float-end">${data.mythicPlusScore}</span>
+            <span class="badge bg-primary rounded-pill float-end">${Math.trunc(data.mythicPlusScore)}</span>
         </li>
     `
 }
@@ -125,7 +125,7 @@ function categoryTemplate(data) {
     return `
         <li class="list-group-item">
             ${data.name}
-            <span class="badge bg-primary rounded-pill float-end">${data.totalPoints}</span>
+            <span class="badge bg-primary rounded-pill float-end">${Math.trunc(data.totalPoints)}</span>
             <ul>
             ${Object.keys(data.subCategories).map(key => subCategoryTemplate(key, data)).join("")}
             </ul>
@@ -180,54 +180,37 @@ addCharacter.addEventListener("click", function (event) {
         fetch(`/blizzard/getcharacterpoints?realm=${realm.value.toLowerCase()}&characterName=${characterName.value.toLowerCase()}&region=${region.toLowerCase()}`)
             .then((response) => response.json())
             .then((data) => {
-                realm.value = "";
                 characterName.value = "";
                 addCharacter.removeAttribute("disabled");
                 addCharacter.innerHTML = `Add Character`;
                 var isMobile = ["xs", "sm"].indexOf(getViewport()) > -1;
-                if (data.level == 0) {
-                    if (isMobile) {
-                        addCharacterCanvasElement.querySelector("#offcanvasTopLabel").innerHTML = "Character Not Found";
-                        addCharacterCanvasElement.querySelector(".offcanvas-body").innerHTML = `
-                            <p>Could not find character: ${data.characterName}-${data.realm}</p>
-                        `;
-                        addCharacterCanvas.show();
-                    } else {
-                        addCharacterModalElement.querySelector(".modal-title").innerHTML = "Character Not Found";
-                        addCharacterModalElement.querySelector(".modal-body").innerHTML = `
-                            <p>Could not find character: ${data.characterName}-${data.realm}</p>
-                        `;
-                        addCharacterModal.show();
-                    }
+                var title = "";
+                var body = "";
+                if (data.level == -1) {
+                    title = "Character Not Found";
+                    body = `<p>Could not find character: ${data.characterName}-${data.realm}</p>`;
+                } else if (data._notAdded && data.hasDied) {
+                    title = "Character Not Hardcore";
+                    body = `<p>Character has deaths already and is not hardcore: ${data.characterName}-${data.realm}</p>`;
+                } else if (data._notAdded && data.boosted) {
+                    title = "Character was boosted";
+                    body = `<p>Character has been flagged for boosting: ${data.characterName}-${data.realm}</p>`;
                 } else if (data._notAdded) {
-                    if (isMobile) {
-                        addCharacterCanvasElement.querySelector("#offcanvasTopLabel").innerHTML = "Character Not Hardcore";
-                        addCharacterCanvasElement.querySelector(".offcanvas-body").innerHTML = `
-                            <p>Character has deaths already and is not hardcore: ${data.characterName}-${data.realm}</p>
-                        `;
-                        addCharacterCanvas.show();
-                    } else {
-                        addCharacterModalElement.querySelector(".modal-title").innerHTML = "Character Not Hardcore";
-                        addCharacterModalElement.querySelector(".modal-body").innerHTML = `
-                            <p>Character has deaths already and is not hardcore: ${data.characterName}-${data.realm}</p>
-                        `;
-                        addCharacterModal.show();
-                    }
+                    title = "Character already added";
+                    body = `<p>Character has already been added: ${data.characterName}-${data.realm}</p>`;
                 } else {
-                    if (isMobile) {
-                        addCharacterCanvasElement.querySelector("#offcanvasTopLabel").innerHTML = "Character Added";
-                        addCharacterCanvasElement.querySelector(".offcanvas-body").innerHTML = `
-                            ${pointOverviewTemplate(data)}
-                        `;
-                        addCharacterCanvas.show();
-                    } else {
-                        addCharacterModalElement.querySelector(".modal-title").innerHTML = "Character Added";
-                        addCharacterModalElement.querySelector(".modal-body").innerHTML = `
-                            ${pointOverviewTemplate(data)}
-                        `;
-                        addCharacterModal.show();
-                    }
+                    title = "Character Added";
+                    body = `${pointOverviewTemplate(data)}`;
                     getAllCharacters();
+                }
+                if (isMobile) {
+                    addCharacterModalElement.querySelector("#offcanvasTopLabel").innerHTML = title;
+                    addCharacterModalElement.querySelector(".offcanvas-body").innerHTML = body
+                    addCharacterCanvas.show();
+                } else {
+                    addCharacterModalElement.querySelector(".modal-title").innerHTML = title;
+                    addCharacterModalElement.querySelector(".modal-body").innerHTML = body;
+                    addCharacterModal.show();
                 }
             });
     }

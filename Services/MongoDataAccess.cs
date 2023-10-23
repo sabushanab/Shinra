@@ -2,10 +2,12 @@
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using Shinra.Actors;
+using Shinra.Clients.Models;
 using Shinra.Messages.Character;
 using Shinra.Services.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -42,16 +44,14 @@ namespace Shinra.Services
             return leaderboardResult;
         }
 
-        public async Task<PointContainer> GetCharacterPoints(string realm, string characterName)
-        {
-            var filter = Builders<PointContainer>.Filter.Eq(x => x._id, $"{characterName}-{realm}");
-            return (await _pointCollection.FindAsync(filter)).SingleOrDefault();
-        }
-
         public async Task<PointContainer> SaveCharacterPoints(PointContainer container)
         {
-            var filter = Builders<PointContainer>.Filter.Eq(x => x._id, container._id);
-            if (_pointCollection.CountDocuments(filter) > 0 && container.HasDied)
+            if (container.NewCharacter && container.HasDied)
+            {
+                container._notAdded = true;
+                return container;
+            }
+            else if (container.NewCharacter && container.Boosted)
             {
                 container._notAdded = true;
                 return container;
@@ -60,6 +60,13 @@ namespace Shinra.Services
             await _pointCollection.ReplaceOneAsync<PointContainer>(x => x._id == container._id, container, new ReplaceOptions() { IsUpsert = true });
 
             return container;
+        }
+
+        public async Task<bool> DoesCharacterExist(string id)
+        {
+            var filter = Builders<PointContainer>.Filter.Eq(x => x._id, id);
+            if (await _pointCollection.CountDocumentsAsync(filter) > 0) { return true; }
+            return false;
         }
 
         public async Task UpdateAllCharacterPoints()
