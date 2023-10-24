@@ -152,3 +152,12 @@ button.form-select {
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
 }
+
+.no-background-color {
+    background-color: unset !important
+}
+
+
+.small-text {
+    font-size: 13px;
+}

@@ -34,7 +34,7 @@ namespace Shinra.Services
                 mythicPlusDetails = await _client.GetMythicPlusSeasonDetails(region, realm, characterName);
             }
             var parsedContainer = ParseContainer(region, statistics, profile, mythicPlusDetails, true);
-            if (profile.level >= 50 && !parsedContainer.HasDied)
+            if (profile.level >= 50 && !parsedContainer.HasDied && !profile.character_class.name.Equals("evoker", StringComparison.OrdinalIgnoreCase))
             {
                 achievements = await _client.GetCharacterAchievements(region, realm, characterName);
                 ParseAchievements(achievements, parsedContainer);

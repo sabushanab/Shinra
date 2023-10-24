@@ -12,7 +12,7 @@ namespace Shinra
         {
             RecurringJob.RemoveIfExists(nameof(IBlizzardDataAccess.UpdateAllCharacterPoints));
             RecurringJob.AddOrUpdate(nameof(IBlizzardDataAccess.UpdateAllCharacterPoints), (IBlizzardDataAccess client) => client.UpdateAllCharacterPoints(),
-            "*/10 * * * *");
+            "*/20 * * * *");
         }
     }
 }
