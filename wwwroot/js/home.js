@@ -204,8 +204,8 @@ addCharacter.addEventListener("click", function (event) {
                     getAllCharacters();
                 }
                 if (isMobile) {
-                    addCharacterModalElement.querySelector("#offcanvasTopLabel").innerHTML = title;
-                    addCharacterModalElement.querySelector(".offcanvas-body").innerHTML = body
+                    addCharacterCanvasElement.querySelector("#offcanvasTopLabel").innerHTML = title;
+                    addCharacterCanvasElement.querySelector(".offcanvas-body").innerHTML = body
                     addCharacterCanvas.show();
                 } else {
                     addCharacterModalElement.querySelector(".modal-title").innerHTML = title;
