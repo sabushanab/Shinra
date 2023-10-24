@@ -151,7 +151,7 @@ function characterTemplate(data) {
                     ${data.characterName}<span class="d-none d-md-inline-block">-${data.realm}</span>
                     <div class="ms-2 point-badge">
                         <span class="badge bg-success">Level ${data.level}</span>
-                        <span class="badge bg-info">${data.totalPoints} Points</span>
+                        <span class="badge bg-info">${Math.trunc(data.totalPoints)} Points</span>
                     </div>
                 </button>
             </h2>
