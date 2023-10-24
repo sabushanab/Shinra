@@ -139,7 +139,7 @@ function subCategoryTemplate(key, data) {
     `;
 }
 
-// Images from twitter @keyboardturn
+
 function characterTemplate(data) {
     dataDictionary[data._id] = data;
     return `
