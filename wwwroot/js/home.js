@@ -113,9 +113,10 @@ function pointOverviewTemplate(data) {
 }
 
 function mythicPlusTemplate(data) {
+
     return `
         <li class="list-group-item">
-            Mythic Plus Rating
+            <a class="text-decoration-none" title="raider.io" href="https://raider.io/characters/${data.region}/${data.realm}/${data.characterName}" target="_new">Mythic Plus Rating</a>
             <span class="badge bg-primary rounded-pill float-end">${Math.trunc(data.mythicPlusScore)}</span>
         </li>
     `
